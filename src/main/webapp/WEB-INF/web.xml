@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+         version="2.4">
+  <!-- 定义来了web应用的名字 -->
+  <display-name>zyh System</display-name>
+  <!-- 在web项目中，当用户在浏览器中输入的URL不包含某个特定的Servlet、html、jsp页面时，web.xml中<welcome-file-list>标签元素就会指定显示的默认文件 -->
+  <welcome-file-list>
+    <welcome-file>/WEB-INF/jsp/login.jsp</welcome-file>
+  </welcome-file-list>
+  <!-- web.xml文件中的jsp-config标签详解 可用于解决jsp、html乱码问题  -->
+  <jsp-config>
+    <taglib>
+      <taglib-uri>zyhTag</taglib-uri>
+      <taglib-location>/WEB-INF/zyhTag.tld</taglib-location>
+    </taglib>
+  </jsp-config>
+
+  <!-- 不太清楚作用的一些配置 -->
+  <!-- spring.profiles --><!-- 现在知道了是spring-context.xml的开发环境配置属性 -->
+  <context-param>
+    <param-name>spring.profiles.default</param-name>
+    <!-- <param-name>spring.profiles.active</param-name> -->
+    <param-value>development</param-value>
+  </context-param>
+  <!-- 在web.xml文件中元素的加载顺序与它们在 web.xml 文件中的先后顺序无关。加载的顺序是：context-param->listener -> filter -> servlet
+  context-param -->
+  <!-- 在线用户监听 -->
+  <listener>
+    <listener-class>com.zyh.listener.OnLineuserListener</listener-class>
+  </listener>
+
+  <!-- log4j 日志 -->
+  <!-- 前面有说web.xml加载顺序 -->
+  <context-param>
+    <param-name>log4jConfigLocation</param-name>
+    <param-value>classpath:log4j.properties</param-value>
+  </context-param>
+  <listener>
+    <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+  </listener>
+
+  <!-- 防止spring内存溢出监听器 -->
+  <listener>
+    <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+  </listener>
+
+  <!-- 网站项目root节点位置 -->
+  <context-param>
+    <param-name>webAppRootKey</param-name>
+    <param-value>zyh.root</param-value>
+  </context-param>
+  <!-- 上边的webAppRootKey的value值的监听器 -->
+  <listener>
+    <listener-class>org.springframework.web.util.WebAppRootListener</listener-class>
+  </listener>
+  <!-- spring MVC Servlet -->
+  <!--1.配置spring分发器(是总的控制中心  被拦截的url会汇聚到该servlet) -->
+  <servlet>
+    <servlet-name>dispatcherServlet</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>classpath:spring-servlet.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+    <!-- <async-supported>true</async-supported> -->
+  </servlet>
+  <!--2. 配置spring拦截的url模板  以.jsp结尾的url-->
+  <servlet-mapping>
+    <servlet-name>dispatcherServlet</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+      <!-- <url-pattern>*.jsp</url-pattern> -->
+      
+<!--   3. 注册配置文件读取器，监听spring配置文件的变化 详见 注3 下方有RequestContextListener监听器-->
+  <!-- ContextLoaderListener与RequestContextListener 两个监听器 后者可选前者必选 -->
+  <listener>
+    <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+  </listener>
+  <listener>
+      <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+  <!-- Spring和mybatis的配置文件 -->
+  <!--4.  设定配置文件列表 设置全局参数 为3的参数配置信息-->
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+      classpath:spring-*.xml,
+      classpath:cxf-server.xml,
+      classpath:cxf-client.xml
+    </param-value>
+  </context-param>
+
+   <!-- 编码过滤器 -->
+  <!--5. 编码字符集统一为UTF-8（过滤器） -->
+  <filter>
+    <filter-name>characterEncodingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>utf-8</param-value>
+    </init-param>
+    <init-param>
+      <param-name>forceEncoding</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>characterEncodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <!-- CXF 框架:CXF 的设计是一种可插拨的架构，既可以支持 XML ，也可以支持非 XML 的类型绑定  -->
+  <servlet>
+    <servlet-name>CXFServlet</servlet-name>
+    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CXFServlet</servlet-name>
+    <url-pattern>/ws/*</url-pattern>
+  </servlet-mapping>
+</web-app>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:task="http://www.springframework.org/schema/task" xmlns:mvc="http://www.springframework.org/schema/mvc"
+  xmlns:p="http://www.springframework.org/schema/p" xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd
+    http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+    
+  <context:component-scan base-package="com.zyh"/>
+  <!-- <context:component-scan base-package="com.zyh.controller" /> -->
+  
+  <!-- 启动Spring MVC的注解功能，完成请求和注解POJO的映射 -->
+  <!-- class="org.springframework.http.converter.json.MapperingJackson2HttpMessageConverter"> -->
+  <mvc:annotation-driven>
+    <mvc:message-converters>
+<!-- 为啥屏蔽的不得而知：Cannot create inner bean 'org.springframework.http.converter.json.MapperingJackson2HttpMessageConverter#0' of type
+      当使用键[0]设置bean属性'messageConverters'时，不能创建类型为[org.springframework.http.converter.json.MapperingJackson2HttpMessageConverter]   
+      <bean
+        class="org.springframework.http.converter.json.MapperingJackson2HttpMessageConverter">
+        <property name="objectMapper" ref="customObjectMapper"/>
+      </bean> -->
+      <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+        <property name="supportedMediaTypes">
+          <list>
+            <value>text/html;charset=UTF-8</value>
+            <value>application/json;charset=UTF-8</value>
+            <value>text/plain;charset=UTF-8</value>
+          </list>
+        </property>
+      </bean>
+      <!-- 后来添加的 -->
+      <bean id="jsonConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+         <property name="supportedMediaTypes">
+           <list>
+              <!-- 这里顺序不能反，一定先写text/html,不然ie下出现下载提示 -->
+              <value>text/html;charset=UTF-8</value>
+              <value>application/json;charset=UTF-8</value>
+              <value>text/plain;charset=UTF-8</value>
+            </list>
+         </property>
+       </bean>
+    </mvc:message-converters>    
+  </mvc:annotation-driven>
+  
+  <!--  这里面暂时是没有内容的     -->
+  <task:annotation-driven/>
+  
+  <mvc:resources mapping="/resources/**" location="/resources/" />
+ 
+  <!-- 不知道这事干啥的，反正报错先屏蔽 --> 
+<!--   <mvc:cors>
+    <mvc:mapping path="/**" />
+  </mvc:cors> -->
+  
+  <!-- 先验证是否登录，否则后续拦截器获取Session中的user会抛出空值异常 -->
+  <mvc:interceptors>
+    <mvc:interceptor><!--   暂时屏蔽 -->
+      <mvc:mapping path="/**" />
+      <mvc:exclude-mapping path="/resources" /><!-- 免除拦截 -->
+      <mvc:exclude-mapping path="/ws/**" />
+      <mvc:exclude-mapping path="/job/**" />
+      <mvc:exclude-mapping path="/login" />
+      <mvc:exclude-mapping path="/logout" />
+      <mvc:exclude-mapping path="/webapp/**" />
+      <mvc:exclude-mapping path="/user/modify_pwd" />
+      <mvc:exclude-mapping path="/user/select" />
+      <mvc:exclude-mapping path="/user/findByNo" />
+      <mvc:exclude-mapping path="/dept/findByAsync" />
+      <bean class="com.zyh.system.AllInterceptor" /> 
+    </mvc:interceptor>
+      
+<!-- 	  <mvc:interceptor>
+	    <mvc:mapping path="/**" />
+      <mvc:exclude-mapping path="/resources" />
+      <mvc:exclude-mapping path="/ws/**" />
+      <mvc:exclude-mapping path="/job/**" />
+      <mvc:exclude-mapping path="/login" />
+      <mvc:exclude-mapping path="/logout" />
+      <mvc:exclude-mapping path="/webapp/**" />
+      <mvc:exclude-mapping path="/user/modify_pwd" />
+      <mvc:exclude-mapping path="/user/select" />
+      <mvc:exclude-mapping path="/user/findByNo" />
+      <mvc:exclude-mapping path="/dept/findByAsync" />
+      <bean class="com.zyh.interceptor.PermissionInterceptor" /> 
+	  </mvc:interceptor> -->
+  </mvc:interceptors>
+  
+  <bean id="messageSource"
+    class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+    <property name="basenames" value="classpath:errors"/>
+    <property name="defaultEncoding" value="UTF-8"/>
+  </bean>
+
+  <bean name="validator"
+    class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+    <property name="validationMessageSource">
+      <ref bean="messageSource" />
+    </property>
+  </bean>
+
+  <bean id="multiparResolver"
+    class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+  </bean>
+  
+  <bean
+    class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+    p:prefix="/WEB-INF/jsp/" p:suffix=".jsp" />
+    <!-- 具有参考价值： https://www.cnblogs.com/feibazhf/p/6403967.html -->
+  
+  <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+    <property name="dataSource">
+      <ref bean="dataSource"/>
+    </property>
+  </bean>
+  
+  <bean id="transactionManager"
+    class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="dataSource"/>
+  </bean>
+  
+  <!-- enable transaction demarcation with annotations:使用注释启用事务划分 -->
+  <tx:annotation-driven transaction-manager="transactionManager"
+    proxy-target-class="true" />
+    
+  <!-- MyBatis配置 -->
+  <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="configLocation" value="classpath:mybatis-config.xml"/>
+    <property name="dataSource" ref="dataSource"/>
+  </bean>
+  
+  <!-- scan for mappers and let them be autowired:扫描映射器并让它们自动装配 -->
+  <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+    <property name="basePackage" value="com.zyh.dao"/>
+  </bean>
+  
+  <bean id="scheduler"
+    class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+    <property name="jobFactory">
+      <!-- 使用自定义SpringBeanJobFactory，以便对Job实现类中使用注解的成员对象进行注入赋值 简单地说，自动装载接口Job实现类中用@Autowired标识的成员对象等。 -->
+      <bean class="com.zyh.domain.quartz.MyspringBeanJobFactory"/>
+    </property>
+    <property name="configLocation" value="classpath:quartz.properties"/>
+  </bean>
+  
+  <!-- 生产环境 -->
+  <beans profile="production">
+    <context:property-placeholder location="classpath:config/jdbc.properties" />
+    <import resource="classpath:spring-jdbc.xml" />
+  </beans>
+  
+  <!-- 开发环境配置 -->
+  <beans profile="development">
+    <context:property-placeholder location="classpath:config/jdbc_dev.properties"/>
+    <import resource="classpath:spring-jdbc.xml"/>
+  </beans>
+  
+</beans>  

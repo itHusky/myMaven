@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 上面的这个http://mybatis.org/dtd/mybatis-3-mapper.dtd应该是用来给这个xml文件节点提示处理的工具比如<mapper></mapper> -->
+<mapper namespace="com.zyh.dao.mainCode.UserLoginMapper">
+
+  <resultMap type="mainCode.UserLogin" id="baseResultMap">
+    <id property="userId" column="user_id"/>
+    <result property="userNo" column="user_no"/>
+    <result property="userName" column="user_name"/>
+    <result property="userPassword" column="user_password"/>
+  </resultMap>
+  
+  <sql id="sqlColumns">
+    *
+  </sql>
+  
+  <sql id="sqlWhere">
+    <trim prefix="WHERE" prefixOverrides="AND |OR">
+      <if test="userId != null and userId != 0">AND user_id = #{userId}</if>
+      <if test="userNo != null and userNo != ''">AND user_no = #{userNo}</if>
+      <if test="userName != null and userName != ''">AND user_name = #{userName}</if>
+      <if test="userPassword != null and userPassword != ''">AND user_password = #{userPassword}</if>
+    </trim>
+  </sql>
+  
+  <sql id="sqlOrderBy">
+    ORDER BY user_id DESC
+  </sql>
+  
+  <!--  parameterType="mainCode.UserLogin" resultMap="baseResultMap" -->
+  <!--  !!! 注意  ！！！ 数据库查询接口实现的标签的————————<select></select>  检查务必仔细  -->
+  <select id="findByName">
+    SELECT <include refid="sqlColumns" />
+      FROM SYS_USER
+     WHERE user_name = #{userName}
+     <include refid="sqlOrderBy"/>
+  </select>
+  
+  <select id="findAll" resultMap="baseResultMap">
+    SELECT <include refid="sqlColumns" />
+      FROM SYS_USER
+  </select>
+  
+  <!--  parameterType="mainCode.UserLogin" resultMap="baseResultMap" -->
+  <select id="findByNo">
+    SELECT <include refid="sqlColumns"/>
+      FROM SYS_USER
+     <include refid="sqlWhere"/>
+     <include refid="sqlOrderBy"/>
+  </select>
+  
+  <select id="findById" resultMap="baseResultMap">
+     SELECT <include refid="sqlColumns" />
+       FROM SYS_USER
+      WHERE user_id = #{userId}
+  </select>
+  
+  <select id="modifyPassword">
+    UPDATE SYS_USER
+       SET user_password = #{userNewPassword}
+     WHERE user_id = #{userId}
+       AND user_password = #{userOldPassword}
+  </select>
+  
+  <select id="loginSystem" resultType="int">
+    SELECT COUNT(0)
+      FROM SYS_USER
+     WHERE user_no = #{userNo}
+       AND user_password = #{userPassword}
+     <include refid="sqlOrderBy"/>
+  </select>
+  
+  <select id="findByNameAndPass"  resultMap="baseResultMap">
+    SELECT *
+      FROM SYS_USER
+     WHERE user_no = #{userNo}
+       AND user_password = #{ciphertext}
+     <include refid="sqlOrderBy"/>
+  </select>
+  
+  <insert id="insert" parameterType="mainCode.UserLogin" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO SYS_USER(
+            user_id,
+            user_no,
+            user_name,
+            user_password
+        ) VALUES (
+            #{userId},
+            #{userNo},
+            #{userName},
+            #{userPassword}
+        )
+    </insert>
+    
+    <update id="update" parameterType="mainCode.UserLogin">
+        UPDATE SYS_USER
+           SET user_id = #{userId},
+               user_no = #{userNo},
+               user_name = #{userName},
+               user_password = #{userPassword}
+    </update>
+    
+    <delete id="delete"  parameterType="mainCode.UserLogin">
+        DELETE FROM SYS_USER WHERE user_id = #{userId}
+    </delete>
+    
+    <delete id="deleteById">
+        DELETE FROM SYS_USER WHERE user_id = #{userId}
+    </delete>
+  
+</mapper>

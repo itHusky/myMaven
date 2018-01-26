@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyh.dao.mainCode.RolesMapper">
+
+    <resultMap type="mainCode.Roles" id="baseResultMap">
+        <id property="roleId" column="role_id"/>
+        <result property="role" column="role" />
+        <result property="description" column="description" />
+        <result property="available" column="available" />
+    </resultMap>
+
+    <sql id="sqlColumns">
+        *
+    </sql>
+    
+    <sql id="sqlWhere">
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="roleId!=null and roleId!=0">AND role_id = #{roleId}</if>
+            <if test="role!=null and role!=''">AND role LIKE CONCAT('%',#{role},'%')</if>
+            <if test="description!=null and description!=''">AND description LIKE CONCAT('%',#{description},'%')</if>
+            <if test="available!=null">AND available = #{available}</if>
+        </trim>
+    </sql>
+    
+    <sql id="sqlOrderBy">
+        ORDER BY role_id DESC
+    </sql>
+    
+    <select id="findAll" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM ROLES
+         <include refid="sqlWhere" /> 
+         <include refid="sqlOrderBy" />
+    </select>
+    
+    <select id="getTotalByEntity" parameterType="mainCode.Roles" resultType="int">
+        SELECT COUNT(0)
+          FROM ROLES
+         <include refid="sqlWhere" />
+    </select>
+    
+    <select id="findById" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+        FROM ROLES
+        WHERE role_id = #{roleId}
+    </select>
+    
+    <select id="findByPage" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM ROLES
+        <include refid="sqlWhere"/>
+        <include refid="sqlOrderBy"/>
+         LIMIT #{offset}, #{rows}
+    </select>
+    
+    <insert id="insert" parameterType="mainCode.Roles" useGeneratedKeys="true" keyProperty="roleId">
+        INSERT INTO roles(
+            role,
+            description,
+            available
+        ) VALUES (
+            #{role},
+            #{description},
+            #{available}
+        )
+    </insert>
+    
+    <update id="update" parameterType="mainCode.Roles">
+        UPDATE roles
+           SET role = #{role},
+               description = #{description},
+               available = #{available}
+    </update>
+    
+    <delete id="delete"  parameterType="mainCode.Roles">
+        DELETE FROM roles WHERE role_id = #{roleId}
+    </delete>
+    
+    <delete id="deleteById">
+        DELETE FROM roles WHERE role_id = #{roleId}
+    </delete>
+    
+</mapper>

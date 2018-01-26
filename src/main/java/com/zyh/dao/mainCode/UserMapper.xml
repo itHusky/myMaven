@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyh.dao.mainCode.UserMapper">
+
+	<resultMap type="mainCode.User" id="baseResultMap">
+	    <id property="id" column="id"/>
+		<association property="user" column="user_id" javaType="mainCode.UserLogin"
+			select="com.zyh.dao.mainCode.UserLoginMapper.findById" />
+		<association property="roles" column="role_id" javaType="mainCode.Roles"
+			select="com.zyh.dao.mainCode.RolesMapper.findById" />
+	</resultMap>
+
+	<sql id="sqlColumns">
+		*
+	</sql>
+
+	<sql id="sqlWhere">
+		<trim prefix="WHERE" prefixOverrides="AND |OR">
+			<if test="user!=null">
+				<if test="user.userId!=null and user.userId!=0">
+					AND user_id IN(
+					SELECT user_id
+					  FROM sys_user
+					 WHERE user_id = #{user.userId}
+					)
+				</if>
+				<if test="user.userNo!=null and user.userNo!=''">
+					AND user_id IN(
+					SELECT user_id
+					  FROM sys_user
+					 WHERE user_no=#{user.userNo}
+					)
+				</if>
+				<if test="user.userName!=null and user.userName!=''">
+					AND user_id IN(
+					SELECT user_id
+					  FROM sys_user
+					 WHERE user_name=#{user.userName}
+					)
+				</if>
+			</if>
+			<if test="roles!=null">
+				<if test="roles.roleId!=null and roles.roleId!=0">
+					AND role_id IN (
+					SELECT role_id
+					  FROM roles
+					 WHERE role_id = #{roles.roleId}
+					)
+				</if>
+				<if test="roles.role!=null and roles.role!=''">
+					AND role_id IN (
+					SELECT role_id
+					  FROM roles
+					 WHERE role=#{roles.role}
+					)
+				</if>
+				<if test="roles.available!=null">
+					AND role_id IN (
+					SELECT role_id
+					  FROM roles
+					 WHERE available = #{roles.available}
+					)
+				</if>
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="sqlOrderBy">
+	   ORDER BY user_id,role_id DESC
+	</sql>
+
+	<select id="findByName" parameterType="mainCode.User" resultMap="baseResultMap">
+       SELECT <include refid="sqlColumns" />
+         FROM USERS_ROLES
+        <include refid="sqlWhere" />
+        <include refid="sqlOrderBy" />
+	</select>
+	
+    <select id="findByUserLogin" parameterType="mainCode.User" resultMap="baseResultMap">
+       SELECT <include refid="sqlColumns" />
+         FROM USERS_ROLES
+        WHERE user_id = #{userLogin.userId}
+        <include refid="sqlOrderBy" />
+    </select>
+
+	<select id="findByNo" parameterType="mainCode.User" resultMap="baseResultMap">
+	    SELECT <include refid="sqlColumns" />
+          FROM USERS_ROLES
+        <include refid="sqlWhere" />
+        <include refid="sqlOrderBy" />
+	</select>
+
+	<select id="userInfoById" resultMap="baseResultMap">
+	    SELECT <include refid="sqlColumns" />
+	      FROM USERS_ROLES
+	     WHERE user_id = #{userId}
+	    <include refid="sqlOrderBy" />
+	</select>
+	
+	<select id="userInfoByNo" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM USERS_ROLES
+         WHERE user_id IN (
+            SELECT user_id
+              FROM SYS_USER
+             WHERE user_no = #{userNO}  
+         ) 
+	</select>
+	
+	<select id="userInfoByName" resultMap="baseResultMap">
+	    SELECT <include refid="sqlColumns" />
+          FROM USERS_ROLES
+         WHERE user_id IN (
+            SELECT user_id
+              FROM SYS_USER
+             WHERE user_name = #{userName}  
+         ) 
+	</select>
+	
+	<select id="userInfoByRoleId" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM USERS_ROLES
+         WHERE role_id = #{roleId}
+    </select>
+    
+    <select id="findAll" parameterType="mainCode.User" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM USERS_ROLES
+         <include refid="sqlWhere" /> 
+         <include refid="sqlOrderBy" />
+    </select>
+    
+    <select id="getTotalByEntity" parameterType="mainCode.User" resultType="int">
+        SELECT COUNT(0)
+          FROM USERS_ROLES
+         <include refid="sqlWhere" />
+    </select>
+    
+   <select id="getCount" resultType="int">
+        SELECT COUNT(0)
+          FROM USERS_ROLES
+         WHERE role_id = #{roleId}
+           AND user_id = #{userId}
+    </select>
+    
+    <select id="findById" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM USERS_ROLES
+         WHERE id = #{id}
+    </select>
+    
+    <select id="findByPage" parameterType="mainCode.User" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM USERS_ROLES
+        <include refid="sqlWhere"/>
+        <include refid="sqlOrderBy"/>
+         LIMIT #{offset}, #{rows}
+    </select>
+    
+    <!-- keyProperty="roleId" -->
+    <insert id="insert" parameterType="mainCode.User" useGeneratedKeys="true">
+        INSERT INTO USERS_ROLES(
+            role_id,
+            user_id
+        ) VALUES (
+            #{roles.id},
+            #{user.id}
+        )
+    </insert>
+    
+    <update id="update" parameterType="mainCode.User">
+        UPDATE USERS_ROLES
+           SET role_id = #{roles.id},
+               user_id = #{user.id}
+    </update>
+    
+    <delete id="delete"  parameterType="mainCode.User">
+        DELETE FROM USERS_ROLES WHERE user_id = #{user.id}
+    </delete>
+    
+    <delete id="deleteById">
+        DELETE FROM USERS_ROLES WHERE user_id = #{user.id}
+    </delete>
+
+</mapper>
