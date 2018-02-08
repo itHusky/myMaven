@@ -12,7 +12,7 @@ import com.zyh.service.base.impl.BaseServiceImpl;
 import com.zyh.service.mainCode.IUserLoginService;
 
 /**
- * 用户登录相关service层接口实现类
+ * Service层： UserLoginServiceImpl->用户登录信息的操作接口实现
  *
  * @author 1101399
  * @CreateDate: 2017-12-27 上午9:53:39

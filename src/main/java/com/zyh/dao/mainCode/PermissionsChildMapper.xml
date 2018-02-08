@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyh.dao.mainCode.PermissionsChildMapper">
+
+    <resultMap type="mainCode.PermissionsChild" id="baseResultMap">
+        <id property="permissionId" column="permission_zid"/>
+        <result property="Permissions" column="permission"/>
+        <result property="description" column="description"/>
+        <result property="available" column="available"/>
+        <association property="permissionPId" column="permission_pid" javaType="mainCode.Permissions"
+            select="com.zyh.dao.mainCode.PermissionsMapper.findById"/>
+    </resultMap>
+    
+    <sql id="sqlColumns">
+        *
+    </sql>
+    
+    <sql id="sqlWhere">
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="permissionId!=null and permissionId!=0">AND permission_zid = #{permissionId}</if>
+            <if test="Permissions!=null and Permissions!=''">AND permission = #{Permissions}</if>
+            <if test="description!=null and description!=''">AND description = #{description}</if>
+            <if test="available!=null">AND available = #{available}</if>
+            <if test="permissionPId!=null">
+                <if test="permissionPId.permissionId!=null AND permissionPId.permissionId!=0">
+                    AND permission_pid = #{permissionPId.permissionId}
+                </if>
+                <if test="permissionPId.Permissions!=null AND permissionPId.Permissions!=''">
+                    AND permission_pid = {
+                        SELECT permission_id
+                          FROM permissions
+                         WHERE permission = #{permissionPId.Permissions}
+                           AND available = 1
+                    }
+                </if>
+                <if test="permissionPId.description!=null AND permissionPId.description!=''">
+                    AND permission_pid = {
+                        SELECT permission_id
+                          FROM permissions
+                         WHERE permission = #{permissionPId.description}
+                           AND available = 1
+                    }
+                </if>
+            </if>
+        </trim>
+    </sql>
+    
+    <sql id="sqlOrderBy">
+        ORDER BY permission_zid DESC
+    </sql>
+    
+    <select id="findById" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM permission_ch
+         WHERE permission_zid = #{id}
+    </select>
+    
+    <select id="findAll" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM permission_ch
+    </select>
+    
+    <select id="getTotalByEntity" parameterType="mainCode.PermissionsChild" resultType="int">
+        SELECT COUNT(0)
+          FROM permission_ch
+         <include refid="sqlWhere" />
+    </select>
+    
+    <select id="getCount" parameterType="mainCode.PermissionsChild" resultType="int">
+        SELECT COUNT(0)
+          FROM permission_ch
+         <include refid="sqlWhere" />
+    </select>
+    
+    <select id="findByPage" parameterType="mainCode.PermissionsChild" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM permission_ch
+        <include refid="sqlWhere" />
+        <include refid="sqlOrderBy" />
+          LIMIT #{offset}, #{rows}
+    </select>
+    
+    <insert id="insert" parameterType="mainCode.PermissionsChild" useGeneratedKeys="true">
+        .
+        .
+        .
+    </insert>
+    
+    <update id="update" parameterType="mainCode.PermissionsChild">
+        .
+        .
+        .
+    </update>
+    
+    <delete id="delete" parameterType="mainCode.PermissionsChild">
+        DELETE FROM permission_ch WHERE permission_zid = #{id}
+    </delete>
+    
+    <delete id="deleteById">
+        DELETE FROM permission_ch WHERE permission_zid = #{id}
+    </delete>
+
+</mapper>

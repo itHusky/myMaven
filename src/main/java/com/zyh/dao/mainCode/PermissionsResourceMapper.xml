@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyh.dao.mainCode.PermissionsResourceMapper">
+
+    <resultMap type="mainCode.PermissionsResource" id="baseResultMap">
+        <association property="permissions" column="permission_zid" javaType="mainCode.Permissions"
+            select="com.zyh.dao.mainCode.PermissionsMapper.findById"/>
+        <association property="resources" column="resource_id" javaType="mainCode.Resources"
+            select="com.zyh.dao.mainCode.ResourcesMapper.findById"/>
+    </resultMap>
+    
+    <sql id="sqlColumns">
+        *
+    </sql>
+    
+    <sql id="sqlWhere">
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="permissions!=null">
+                <if test="permissions.permissionId!=null AND permissions.permissionId!=0">
+                    AND permission_zid = #{permissions.permissionId}
+                </if>
+            </if>
+            <if test="resources!=null">
+                <if test="resources.resourceId!=null AND resources.resourceId!=0">
+                    AND resource_id = #{resources.resourceId}
+                </if>
+            </if>
+        </trim>
+    </sql>
+    
+    <sql id="sqlOrderBy">
+        ORDER BY permission_zid DESC
+    </sql>
+    
+    <select id="findAll" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM resources_permission
+    </select>
+    
+    <select id="getTotalByEntity" parameterType="mainCode.PermissionsResource" resultType="int">
+        SELECT COUNT(0)
+          FROM resources_permission
+         <include refid="sqlWhere" />
+    </select>
+    
+    <select id="getCount" parameterType="mainCode.PermissionsResource" resultType="int">
+        SELECT COUNT(0)
+          FROM resources_permission
+         <include refid="sqlWhere" />
+    </select>
+    
+    <select id="findByPage" parameterType="mainCode.PermissionsResource" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM resources_permission
+        <include refid="sqlWhere" />
+        <include refid="sqlOrderBy" />
+          LIMIT #{offset}, #{rows}
+    </select>
+    
+    <select id="findByPermissionId" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM resources_permission
+         WHERE permission_zid = #{permissionId}
+    </select>
+    
+<!--     <insert id="insert" parameterType="mainCode.PermissionsResource" useGeneratedKeys="true">
+        .
+        .
+        .
+    </insert>
+    
+    <update id="update" parameterType="mainCode.PermissionsResource">
+        .
+        .
+        .
+    </update> -->
+    
+    <delete id="delete" parameterType="mainCode.PermissionsResource">
+        DELETE FROM resources_permission WHERE permission_zid = #{id}
+    </delete>
+    
+    <delete id="deleteById">
+        DELETE FROM resources_permission WHERE permission_zid = #{id}
+    </delete>
+
+</mapper>

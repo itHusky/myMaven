@@ -6,7 +6,7 @@
   <shortname>张易鸿的个人标签库</shortname>
   <tag>
     <name>func</name>
-    <tagclass>com.zyh.tag.functionTag</tagclass>
+    <tagclass>com.zyh.tag.FunctionTag</tagclass>
     <attribute>
       <name>uri</name>
       <required>true</required>

@@ -140,8 +140,8 @@
    <select id="getCount" resultType="int">
         SELECT COUNT(0)
           FROM USERS_ROLES
-         WHERE role_id = #{roleId}
-           AND user_id = #{userId}
+         WHERE role_id = #{roles.roleId}
+           AND user_id = #{user.userId}
     </select>
     
     <select id="findById" resultMap="baseResultMap">
@@ -164,23 +164,23 @@
             role_id,
             user_id
         ) VALUES (
-            #{roles.id},
-            #{user.id}
+            #{roles.roleId},
+            #{user.userId}
         )
     </insert>
     
     <update id="update" parameterType="mainCode.User">
         UPDATE USERS_ROLES
-           SET role_id = #{roles.id},
-               user_id = #{user.id}
+           SET role_id = #{roles.roleId},
+               user_id = #{user.userId}
     </update>
     
-    <delete id="delete"  parameterType="mainCode.User">
-        DELETE FROM USERS_ROLES WHERE user_id = #{user.id}
+    <delete id="delete" parameterType="mainCode.User">
+        DELETE FROM USERS_ROLES WHERE user_id = #{user.userId}
     </delete>
     
     <delete id="deleteById">
-        DELETE FROM USERS_ROLES WHERE user_id = #{user.id}
+        DELETE FROM USERS_ROLES WHERE user_id = #{id}
     </delete>
 
 </mapper>

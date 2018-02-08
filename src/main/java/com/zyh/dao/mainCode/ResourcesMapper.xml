@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyh.dao.mainCode.ResourcesMapper">
+
+    <resultMap type="mainCode.Resources" id="baseResultMap">
+        <id property="resourceId" column="resource_id"/>
+        <result property="Resources" column="resource"/>
+        <result property="description" column="description"/>
+        <result property="available" column="available"/>
+    </resultMap>
+    
+    <sql id="sqlColumns">
+        *
+    </sql>
+    
+    <sql id="sqlWhere">
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="resourceId!=null and resourceId!=0">AND resource_id = #{resourceId}</if>
+            <if test="Resources!=null and Resources!=''">AND resource = #{Permissions}</if>
+            <if test="description!=null and description!=''">AND description = #{description}</if>
+            <if test="available!=null">AND available = #{available}</if>
+        </trim>
+    </sql>
+    
+    <sql id="sqlOrderBy">
+        ORDER BY resource_id resourceId 
+    </sql>
+    
+    <select id="findById" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM resources
+         WHERE resource_id = #{id}
+    </select>
+    
+    <select id="findAll" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM resources
+    </select>
+    
+    <select id="getTotalByEntity" parameterType="mainCode.Resources" resultType="int">
+        SELECT COUNT(0)
+          FROM resources
+         <include refid="sqlWhere" />
+    </select>
+    
+    <select id="getCount" parameterType="mainCode.Resources" resultType="int">
+        SELECT COUNT(0)
+          FROM resources
+         <include refid="sqlWhere" />
+    </select>
+    
+    <select id="findByPage" parameterType="mainCode.Resources" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM resources
+        <include refid="sqlWhere" />
+        <include refid="sqlOrderBy" />
+          LIMIT #{offset}, #{rows}
+    </select>
+    
+<!--     <insert id="insert" parameterType="mainCode.Resources" useGeneratedKeys="true">
+        .
+        .
+        .
+    </insert>
+    
+    <update id="update" parameterType="mainCode.Resources">
+        .
+        .
+        .
+    </update> -->
+    
+    <delete id="delete" parameterType="mainCode.Resources">
+        DELETE FROM resources WHERE resource_id = #{id}
+    </delete>
+    
+    <delete id="deleteById">
+        DELETE FROM resources WHERE resource_id = #{id}
+    </delete>
+
+</mapper>

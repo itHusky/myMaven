@@ -1,5 +1,8 @@
 package com.zyh.controller.loginRule;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -11,8 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.zyh.domain.mainCode.PermissionsResource;
+import com.zyh.domain.mainCode.RolePermission;
+import com.zyh.domain.mainCode.Roles;
 import com.zyh.domain.mainCode.User;
 import com.zyh.domain.mainCode.UserLogin;
+import com.zyh.service.mainCode.IPermissionsResourceService;
+import com.zyh.service.mainCode.IRolePermissionService;
 import com.zyh.service.mainCode.IUserLoginService;
 import com.zyh.service.mainCode.IUserService;
 import com.zyh.util.SessionUtils;
@@ -34,10 +42,12 @@ public class LoginController {
 
     @Autowired
     private IUserService userService;
-    // @Autowired
-    // private IFunctionService funcService;
     @Autowired
     private IUserLoginService logLoginService;
+    @Autowired
+    private IRolePermissionService rolePermissionService;
+    @Autowired
+    private IPermissionsResourceService permissionsResourceService;
 
     /**
      * 登录
@@ -110,6 +120,8 @@ public class LoginController {
             // 登录成功处理
             loginSuccess(userNo, userPassword, request, model);
 
+
+
             // 写入登录日志
             String loginIP = request.getRemoteAddr();
             logger.debug(loginIP);
@@ -148,12 +160,47 @@ public class LoginController {
 
         UserLogin userLogin = logLoginService.findByNameAndPass(userNo, userPassword);
 
-        // session清除
+        // session：清除不用的session数据
         request.getSession().invalidate();
+        // session：登录信息存储
         request.getSession().setAttribute("userLogin", userLogin);
+
 
         User user = userService.findByUserLogin(userLogin);
 
+        // 并存储用户角色的权限信息以便通过自定义标签进行显示处理限制
+        Roles xx = user.getRoles();//用户角色信息
+
+     /*   Integer idRole = user.getRoles().getRoleId();
+        if (idRole == 1){
+            List<PermissionsResource> zz = permissionsResourceService.findAll();
+
+            // 添加用户拥有的URL资源
+            List<String> URIList = new ArrayList<String>();
+            for(int i = 0;i < zz.size(); i++){
+                PermissionsResource func = zz.get(i);
+                URIList.add(func.getResources().getResources());
+            }
+            request.getSession().setAttribute("URIList", URIList);
+        }else{*/
+            /**
+             *
+             * 由于跨域了多个表查询数据     必须      依次验证相应的数据是否为空
+             *
+             * 一个角色对应一个权限（子级权限 ）
+             * 一个子级权限对应多个URL资源
+             *
+             */
+            RolePermission yy = rolePermissionService.findByRolesId(xx.getRoleId());
+            List<PermissionsResource> zz = permissionsResourceService.findByPermissionId(yy.getPermissions().getPermissionId());
+
+            // 添加用户拥有的URL资源
+            List<String> URIList = new ArrayList<String>();
+            for(int i = 0;i < zz.size(); i++){
+                PermissionsResource func = zz.get(i);
+                URIList.add(func.getResources().getResources());
+            }
+            request.getSession().setAttribute("URIList", URIList);
     }
 
     /**

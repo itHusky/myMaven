@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyh.dao.mainCode.RolePermissionMapper">
+
+    <resultMap type="mainCode.RolePermission" id="baseResultMap">
+        <association property="roles" column="role_id" javaType="mainCode.Roles"
+            select="com.zyh.dao.mainCode.RolesMapper.findById" />
+        <association property="permissions" column="permission_zid" javaType="mainCode.PermissionsChild"
+            select="com.zyh.dao.mainCode.PermissionsChildMapper.findById" />
+    </resultMap>
+    
+    <sql id="sqlColumns">
+        *
+    </sql>
+    
+    <sql id="sqlWhere">
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="roles!=null">
+                <if test="roles.roleId!=null and roles.roleId!=0">
+                    AND role_id = #{roles.roleId}
+                </if>
+            </if>
+            <if test="permissions!=null">
+                <if test="permissions.permissionId!=null and permissions.permissionId!=0">
+                    AND permission_zid = #{permissions.permissionId}
+                </if>
+            </if>
+        </trim>
+    </sql>
+    
+    <sql id="sqlOrderBy">
+        ORDER BY role_id,permission_zid DESC
+    </sql>
+    
+    <select id="findById" parameterType="mainCode.RolePermission" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM roles_permission
+         WHERE role_id = #{roles.roleId}
+    </select>
+    
+    <select id="findAll" parameterType="mainCode.RolePermission" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM roles_permission
+         <include refid="sqlWhere" />
+         <include refid="sqlOrderBy" />
+    </select>
+    
+    <select id="getTotalByEntity" parameterType="mainCode.RolePermission" resultType="int">
+        SELECT COUNT(0)
+          FROM roles_permission
+         <include refid="sqlWhere" />
+    </select>
+    
+    <select id="getCount" resultType="int">
+        SELECT COUNT(0)
+          FROM roles_permission
+         WHERE role_id = #{roles.roleId}
+           AND permission_zid = #{permissions.permissionId}
+    </select>
+    
+    <select id="findByPage" parameterType="mainCode.RolePermission" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM roles_permission
+         <include refid="sqlWhere" />
+         <include refid="sqlOrderBy" />
+         LIMIT #{offset},#{rows}
+    </select>
+    
+    <select id="findByRolesId" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM roles_permission
+         WHERE role_id = #{roleId}
+    </select>
+    
+    <insert id="insert" parameterType="mainCode.RolePermission" useGeneratedKeys="true">
+        INSERT INTO roles_permission(
+            role_id,
+            permission_zid
+        ) VALUES (
+            #{roles.roleId},
+            #{permissions.permissionId}
+        )
+    </insert>
+    
+    <update id="update" parameterType="mainCode.RolePermission">
+        UPDATE roles_permission
+           SET role_id = #{roles.roleId}
+               permission_zid = #{permissions.permissionId}
+    </update>
+    
+    <delete id="delete" parameterType="mainCode.RolePermission">
+        DELETE FROM roles_permission WHERE role_id = #{id}
+    </delete>
+    
+    <delete id="deleteById">
+        DELETE FROM roles_permission WHERE role_id = #{id}
+    </delete>
+
+</mapper>

@@ -11,4 +11,12 @@ import com.zyh.service.base.IBaseService;
  */
 public interface IRolePermissionService extends IBaseService<RolePermission, Integer>{
 
+    /**
+     * 角色ID查询对应的权限对应信息
+     *
+     * @param roleId
+     * @return
+     */
+    public RolePermission findByRolesId(Integer roleId);
+
 }

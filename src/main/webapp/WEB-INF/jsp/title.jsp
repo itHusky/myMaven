@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@taglib uri="zyhTag" prefix="zyh"%>
 <script type="text/javascript"  src="resources/widget/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 <!-- JS配置文件没有和title在同一个文件的话不能实现下拉菜单的展开 -->
 <jsp:include page="base.jsp"></jsp:include>
@@ -20,26 +21,29 @@ html,body {
 	                         <li class="dropdown">
 								              <a href="#" class="dropdown-toggle glyphicon glyphicon-play-circle" data-toggle="dropdown"> 列表   <b class="caret"></b></a>
 								              <ul class="dropdown-menu">
-								                <hf:func uri="user/list">
+								                <zyh:func uri="user/list">
 								                  <li><a href="user/list" class="glyphicon glyphicon-tree-conifer"> 主站</a></li>
-								                </hf:func>
-								                <hf:func uri="user/list">
+								                </zyh:func>
+								                <zyh:func uri="user/list">
 								                  <li><a href="user/list" class="glyphicon glyphicon-envelope"> 相簿</a></li>
-								                </hf:func>
+								                </zyh:func>
 								                <li role="presentation" class="divider"></li>
-								                <hf:func uri="file/list">
+								                <zyh:func uri="file/list">
 								                  <li><a href="file/list" class="glyphicon glyphicon-tree-deciduous"> 文档</a></li>
-								                </hf:func>
-								                <hf:func uri="video/list">
+								                </zyh:func>
+								                <zyh:func uri="video/list">
 								                  <li><a href="video/list" class="glyphicon glyphicon-eye-open"> 视频</a></li>
-								                </hf:func>
+								                </zyh:func>
+								                <zyh:func uri="video/get">
+                                                  <li><a href="video/get" class="glyphicon glyphicon-eye-open"> 视频2</a></li>
+                                                </zyh:func>
 								                <li role="presentation" class="divider"></li>
-								                <hf:func uri="user/list">
+								                <zyh:func uri="user/list">
 								                  <li><a href="user/list" class="glyphicon glyphicon-tasks"> 个人空间</a></li>
-								                </hf:func>
-								                <hf:func uri="user/list">
+								                </zyh:func>
+								                <zyh:func uri="user/list">
 								                  <li><a href="user/list" class="glyphicon glyphicon-compressed"> 用户中心</a></li>
-								                </hf:func>
+								                </zyh:func>
 								              </ul>
 								            </li>
 	                    </ul><!-- nav navbar-nav -->

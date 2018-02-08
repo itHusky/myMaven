@@ -56,7 +56,7 @@
     <listener-class>org.springframework.web.util.WebAppRootListener</listener-class>
   </listener>
   <!-- spring MVC Servlet -->
-  <!--1.配置spring分发器(是总的控制中心  被拦截的url会汇聚到该servlet) -->
+  <!-- 1.配置spring分发器(是总的控制中心  被拦截的url会汇聚到该servlet) -->
   <servlet>
     <servlet-name>dispatcherServlet</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -67,14 +67,14 @@
     <load-on-startup>1</load-on-startup>
     <!-- <async-supported>true</async-supported> -->
   </servlet>
-  <!--2. 配置spring拦截的url模板  以.jsp结尾的url-->
+  <!-- 2. 配置spring拦截的url模板  以.jsp结尾的url-->
   <servlet-mapping>
     <servlet-name>dispatcherServlet</servlet-name>
     <url-pattern>/</url-pattern>
   </servlet-mapping>
       <!-- <url-pattern>*.jsp</url-pattern> -->
       
-<!--   3. 注册配置文件读取器，监听spring配置文件的变化 详见 注3 下方有RequestContextListener监听器-->
+  <!-- 3. 注册配置文件读取器，监听spring配置文件的变化 详见 注3 下方有RequestContextListener监听器-->
   <!-- ContextLoaderListener与RequestContextListener 两个监听器 后者可选前者必选 -->
   <listener>
     <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
@@ -84,7 +84,7 @@
   </listener>
 
   <!-- Spring和mybatis的配置文件 -->
-  <!--4.  设定配置文件列表 设置全局参数 为3的参数配置信息-->
+  <!-- 4.  设定配置文件列表 设置全局参数 为3的参数配置信息-->
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
@@ -94,8 +94,8 @@
     </param-value>
   </context-param>
 
-   <!-- 编码过滤器 -->
-  <!--5. 编码字符集统一为UTF-8（过滤器） -->
+  <!-- 编码过滤器 -->
+  <!-- 5. 编码字符集统一为UTF-8（过滤器） -->
   <filter>
     <filter-name>characterEncodingFilter</filter-name>
     <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
@@ -122,4 +122,11 @@
     <servlet-name>CXFServlet</servlet-name>
     <url-pattern>/ws/*</url-pattern>
   </servlet-mapping>
+  
+  <!-- 项目单独设置session信息存储时间:Tomcat web.xml中默认设置为30min 设置最大时间为1440min = 24H -->
+  <!-- 设置为负数或者0正则存储时间为永久 -->
+  <session-config>
+    <session-timeout>240</session-timeout>
+  </session-config>
+  
 </web-app>

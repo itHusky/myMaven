@@ -67,6 +67,7 @@
 	           </div><!-- page-header -->
 	           <!-- ---------- -登录框begin- --------- -->
 	           <form id="login" action="login" method="post" class="form-horizontal">
+	               <input type="hidden" value="" name="redirectUrl">
 			        <div class="form-group">
 			           <label class="col-sm-4 control-label">登录用户</label>
 			           <div class="col-sm-4"><input class="form-control" name="userNo"></div>

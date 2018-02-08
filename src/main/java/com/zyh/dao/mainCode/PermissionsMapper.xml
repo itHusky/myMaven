@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyh.dao.mainCode.PermissionsMapper">
+
+    <resultMap type="mainCode.Permissions" id="baseResultMap">
+        <id property="permissionId" column="permission_id"/>
+        <result property="Permissions" column="permission" />
+        <result property="description" column="description" />
+        <result property="available" column="available" />
+    </resultMap>
+    
+    <sql id="sqlColumns">
+        *
+    </sql>
+    
+    <sql id="sqlWhere">
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="permissionId!=null and permissionId!=0">AND permission_id = #{permissionId}</if>
+            <if test="Permissions!=null and Permissions!=''">AND permission = #{Permissions}</if>
+            <if test="description!=null and description!=''">AND description = #{description}</if>
+            <if test="available!=null">AND available = #{available}</if>
+        </trim>
+    </sql>
+    
+    <sql id="sqlOrderBy">
+        ORDER BY permission_id DESC
+    </sql>
+    
+    <select id="findAll"  resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns"/>
+          FROM permissions
+    </select>
+    
+    <select id="findById" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM permissions
+         WHERE permission_id = #{id}
+    </select>
+    
+    <select id="getTotalByEntity" parameterType="mainCode.Permissions" resultType="int">
+        SELECT COUNT(0)
+          FROM permissions
+         <include refid="sqlWhere" />
+    </select>
+    
+    <select id="getCount" resultType="int">
+        SELECT COUNT(0)
+          FROM permissions
+       <include refid="sqlWhere" />
+    </select>
+    
+    <select id="findByPage" parameterType="mainCode.Permissions" resultMap="baseResultMap">
+        SELECT <include refid="sqlColumns" />
+          FROM permissions
+         <include refid="sqlWhere" />
+         <include refid="sqlOrderBy" />
+          LIMIT #{offset}, #{rows}
+    </select>
+    
+    <insert id="insert" parameterType="mainCode.Permissions" useGeneratedKeys="true">
+        INSERT INTO permissions(
+            permission,
+            description,
+            available
+        ) VALUES (
+            #{Permissions},
+            #{description},
+            #{available}
+        )
+    </insert>
+    
+    <update id="update" parameterType="mainCode.Permissions">
+        UPDATE permissions
+           SET permission = #{Permissions},
+               description = #{description},
+               available = #{available}
+    </update>
+    
+    <delete id="delete" parameterType="mainCode.Permissions">
+        DELETE FROM permissions WHERE permission_id = #{permissionId}
+    </delete>
+    
+    <delete id="deleteById">
+        DELETE FROM permissions WHERE permission_id = #{permissionId}
+    </delete>
+
+</mapper>
