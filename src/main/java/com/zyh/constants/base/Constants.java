@@ -12,4 +12,7 @@ public class Constants {
 	public final static String SESSION_LOGIN_USER = "userLogin";// 登录用户
 	public final static String SESSION_URI_LIST = "URIList";// 用户拥有的ＵＲＬ权限资源
 	public final static String SESSION_REDIRECT_URL_PARAMS = "redirectUrlParams";// 临时保存跳转链接redirectUrl的参数值
+
+	// 界面页数展示
+	public final static int DEFAULT_PAGE_SIZE = 15;
 }

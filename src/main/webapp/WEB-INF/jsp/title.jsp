@@ -6,15 +6,21 @@
 <jsp:include page="base.jsp"></jsp:include>
 <style type="text/css">
 html,body {
-  padding-top: 35px;
+	padding-top: 35px;
+}
+
+li {
+    .a { 
+        color:#383838;
+    }
 }
 </style>
 	<div class="container">
 	   <div class="row">
 	       <nav class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
-	           <div class="container-fluid">
+	           <div class="container-fluid" style="background-color:#3366CC;">
 	               <dir class="navbar-header">
-                      <a class="navbar-brand" href="user/list">X界致力让生活更美好！</a>
+                      <a class="navbar-brand" style="color:#383838;" href="user/list">X界致力让生活更美好！</a>
 	               </dir><!-- navbar-header -->
 	               <div class="collapse navbar-collapse navbar-right">
 	                    <ul class="nav navbar-nav">
