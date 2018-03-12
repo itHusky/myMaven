@@ -38,10 +38,10 @@ public class Concurrent_Server {
 
         // java 提供了ServerSocket 作为服务器
         // 这里使用了java的自动关闭的语法，很好用？？？
-        //  java1.7特性，叫做try-with-resource，实现了AutoCloseable接口的实例可以放在
-        //  try(...)中在离开try块时将自动调用close()方法。该方法调用可以看做在finally块中，
-        //  所以资源的释放一定会执行，不过能不能成功释放还是得看close方法是否正常返回。
-        try (ServerSocket serverSocket = new ServerSocket(SERVICE_PORT,5,serverAddr)){
+        // java1.7特性，叫做try-with-resource，实现了AutoCloseable接口的实例可以放在
+        // try(...)中在离开try块时将自动调用close()方法。该方法调用可以看做在finally块中，
+        // 所以资源的释放一定会执行，不过能不能成功释放还是得看close方法是否正常返回。
+        try (ServerSocket serverSocket = new ServerSocket(SERVICE_PORT, 5, serverAddr)) {
 
             // 100个线程的线程池 如果放到里面的话就每次循环创建100个大小的线程池
             Executor excutor = Executors.newFixedThreadPool(100);
@@ -49,8 +49,8 @@ public class Concurrent_Server {
                 // StringBuilder recvStrBuilder = new StringBuilder();
                 final StringBuilder recvStrBuilder = new StringBuilder();
 
-                try{
-                    // 有客户端向服务器发起TCP连接时，accpet会返回一个Socket
+                try {
+                    // 有客户端向服务器发起TCP连接时，accept会返回一个Socket
                     // 该Socket的对端就是客户端的Socket
                     // 具体过程请参考TCP三次握手的过程
                     // Socket connection = serverSocket.accept();
@@ -64,29 +64,31 @@ public class Concurrent_Server {
                         public void run() {
                             // 局部引用防止connection被系统回收
                             Socket conn = connection;
-                            try{
+                            try {
                                 InputStream in = conn.getInputStream();
 
                                 // 读取结束字符标志为读取循环结束标志
-                                for(int c = in.read();c != END_CHAR; c = in.read()){
-                                    recvStrBuilder.append((char)c);
+                                for (int c = in.read(); c != END_CHAR; c = in.read()) {
+                                    recvStrBuilder.append((char) c);
                                 }
                                 recvStrBuilder.append('#');
 
+                                System.out.println("接收:" + recvStrBuilder);
+
                                 String recvStr = recvStrBuilder.toString();
 
-                                //向客户端写出处理后的字符串
+                                // 向客户端写出处理后的字符串
                                 OutputStream out = conn.getOutputStream();
                                 out.write(recvStr.toUpperCase().getBytes());
 
-                            }catch(IOException e){
+                            } catch (IOException e) {
                                 e.printStackTrace();
-                            }finally{
-                                try{
-                                    if(conn != null){
-                                    conn.close();
+                            } finally {
+                                try {
+                                    if (conn != null) {
+                                        conn.close();
                                     }
-                                }catch(IOException e){
+                                } catch (IOException e) {
                                     e.printStackTrace();
                                 }
                             }
@@ -94,17 +96,17 @@ public class Concurrent_Server {
                         }
                     });
                     /*********/
-                }catch(IOException e){
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
 
-        } catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         Concurrent_Server server = new Concurrent_Server();
         server.startServer(SERVICE_IP, SERVICE_PORT);
     }

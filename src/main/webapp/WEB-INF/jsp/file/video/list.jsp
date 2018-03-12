@@ -11,7 +11,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<jsp:include page="../../header.jsp" />
+  <jsp:include page="../../header.jsp" />
 </head>
 <body class="table-responsive">
   <div><jsp:include page="../../title.jsp"></jsp:include></div>
@@ -41,6 +41,5 @@
 		  </c:forEach>
 		</tbody>
 	</table>
-</body>
-<jsp:include page="../../base.jsp" flush="true"></jsp:include><!--动态包含-->
+</body><!--asdads  -->
 </html>

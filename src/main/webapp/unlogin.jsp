@@ -5,12 +5,14 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 %>
 <html>
 	<head>
+	    <jsp:include page="/WEB-INF/jsp/header.jsp" />
 		<base href="<%=basePath%>">
 		<title>登录超时</title>
 		<link rel="stylesheet" type="text/css" href="resources/widget/bootstrap-3.3.7-dist/css/bootstrap.min.css">
 		<link rel="stylesheet" type="text/css" href="resources/css/webapp.css">
 		<style type="text/css">
 			body{padding-top: 100px;}
+			a>img{margin-top: -5px;}
 		</style>
 	</head>
 	<body>
@@ -23,8 +25,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		        <span class="icon-bar"></span>
 		        <span class="icon-bar"></span>
 		      </button>
-		      <a class="navbar-brand"><img class="logo" src="resources/img/logo.gif"></a>
-		      <a class="navbar-brand"><span>X</span></a>
+		      <!-- <a class="navbar-brand"><img class="logo" src="resources/img/logo.gif"></a> -->
+		      <a class="navbar-brand"><img class="logo" src="/file/favicon.ico"></a>
+		      <a class="navbar-brand"><span>little bitch</span></a>
 		    </div>
 		    <div class="collapse navbar-collapse">
 

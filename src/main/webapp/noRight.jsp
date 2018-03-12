@@ -7,6 +7,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <!DOCTYPE HTML>
 <html>
 	<head>
+	    <jsp:include page="/WEB-INF/jsp/header.jsp" />
 		<base href="<%=basePath%>">
 		<title>权限不足!</title>
 		<link rel="stylesheet" type="text/css" href="resources/widget/bootstrap-3.3.7-dist/css/bootstrap.min.css">

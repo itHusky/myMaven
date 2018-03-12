@@ -57,7 +57,6 @@
 		</div>
 	</div>
 </body>
-<jsp:include page="../../base.jsp" flush="true"/>
 <script>
 function openLayer(name){
 	layer.open({

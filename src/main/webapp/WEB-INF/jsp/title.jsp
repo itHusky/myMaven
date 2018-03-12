@@ -3,24 +3,26 @@
 <%@taglib uri="zyhTag" prefix="zyh"%>
 <script type="text/javascript"  src="resources/widget/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 <!-- JS配置文件没有和title在同一个文件的话不能实现下拉菜单的展开 -->
-<jsp:include page="base.jsp"></jsp:include>
+<%-- <jsp:include page="header.jsp" /> --%>
+<%-- <jsp:include page="base.jsp"></jsp:include> --%>
 <style type="text/css">
 html,body {
-	padding-top: 35px;
+	padding-top: 40px;
 }
-
-li {
-    .a { 
-        color:#383838;
-    }
+li>a{
+    color:#FF0033!important;
+    font-size:20px;
+}
+li>a>b{
+    margin-bottom: 8px;
 }
 </style>
 	<div class="container">
 	   <div class="row">
 	       <nav class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
-	           <div class="container-fluid" style="background-color:#3366CC;">
+	           <div class="container-fluid" style="background-color:#333399;">
 	               <dir class="navbar-header">
-                      <a class="navbar-brand" style="color:#383838;" href="user/list">X界致力让生活更美好！</a>
+                      <a class="navbar-brand" style="color:#FFCC33;" href="user/list">one world one xxx</a>
 	               </dir><!-- navbar-header -->
 	               <div class="collapse navbar-collapse navbar-right">
 	                    <ul class="nav navbar-nav">
