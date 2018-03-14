@@ -120,8 +120,6 @@ public class LoginController {
             // 登录成功处理
             loginSuccess(userNo, userPassword, request, model);
 
-
-
             // 写入登录日志
             String loginIP = request.getRemoteAddr();
             logger.debug(loginIP);

@@ -162,7 +162,10 @@ public class BeanNameViewResolver extends WebApplicationObjectSupport implements
     }
 
 
-    /*
+    /* XXX
+     * WebApplicationContext继承ApplicationContext类
+     *          ApplicationContext应用上下文，进行了很多扩展，它作为容器的高级形态存在
+     *
                      在讲SpringMVC容器创建时介绍过WebApplicationContext是在FrameworkServlet中创建的，默认使用的是XmlWebApplicationContext，它的父类是AbstractRefreshableWebApplicationContext，这个类实现了ThemeSource接口，实现方式是在内部封装了一个ThemeSource属性，然后将具体工作交给它。
                      这里可以把ThemeSource理解成一个配置文件，默认使用的是WebApplicationContext。ThemeResolver默认使用的是FixedThemeResolver。这些我们可以自己配置，例如：
         <bean id="themeSource" class="org.springframework.ui.context.support.ResourceBundleThemeSource" p:basenamePrefix="com.excelib.themes."/>

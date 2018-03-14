@@ -1,10 +1,24 @@
 package com.zyh.system;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.zyh.exception.BusinessException;
+import com.zyh.exception.ValidateException;
+import com.zyh.util.HtmlUtils;
+import com.zyh.util.JsonUtils;
+import com.zyh.vo.base.JsonResult;
+
 
 /**
  * Spring MVC九大组件之 HandlerExceptionResolver
@@ -17,6 +31,11 @@ import org.springframework.web.servlet.ModelAndView;
  * @CreateDate 2018-3-12 上午10:29:22
  */
 public class ExceptionResolver implements HandlerExceptionResolver {
+
+    /**
+     * 日志控制台输出
+     */
+    private static final Logger logger = Logger.getLogger(ExceptionResolver.class);
 
     /**
      *
@@ -57,7 +76,61 @@ public class ExceptionResolver implements HandlerExceptionResolver {
     public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,
             Object handler, Exception ex) {
         // TODO Auto-generated method stub
-        return null;
+
+        String errMsg = null;
+
+        // 整体对异常信息依次过滤判断，输出相应的异常信息
+        if(ex instanceof BusinessException){
+            // 业务异常对象
+            errMsg = "业务异常-|-" + ex.getMessage();
+        }else if (ex instanceof ValidateException){
+            // 验证异常
+            errMsg = "验证异常-|-" + ex.getMessage();
+        }else if (ex instanceof NullPointerException){
+            // 录入数据不完整，或查询结果为空！
+            errMsg = "录入数据不完整，或查询结果为空！-|-" + ex.getMessage();
+        }else if(ex instanceof FileNotFoundException){
+            // 文件不存在！
+            errMsg = "文件不存在！-|-" + ex.getMessage();
+        }else if(ex instanceof IOException){
+            // 文件读写或网络传输异常！
+            errMsg = "文件读写或网络传输异常！-|-" + ex.getMessage();
+        }else if(ex instanceof org.mybatis.spring.MyBatisSystemException){
+            // 数据库查询错误！请反馈系统管理员！
+            errMsg = "数据库查询错误！请反馈系统管理员！-|-" + ex.getMessage();
+        }else{
+            // 其他异常|系统异常
+            errMsg = "系统异常-|-" + ex.getMessage();
+        }
+
+        log(request, response, handler, ex);
+
+        if(HtmlUtils.isAjaxRequest(request)){
+            response.setContentType("application/json;charset=UTF-8");
+            PrintWriter out;
+            try{
+                out = response.getWriter();
+                out.write(JsonUtils.toString(new JsonResult<Object>(false, errMsg)));
+                out.flush();
+                out.close();
+            }catch(IOException e){
+                throw new RuntimeException(e);
+            }
+            return null;
+        } else {
+            response.reset();// 清除下载文件设置的返回头信息（如response.setContentType("image/jpeg")等，以便能跳转到错误提示界面）
+//          import com.sun.xml.xsom.impl.scd.Iterators.Map; 报错 - 原因：不同的Map对应的方法不一样
+            Map<String, Object> model = new HashMap<String, Object>();
+            model.put("errMasg", errMsg);
+            return new ModelAndView("error", model);
+        }
+    }
+
+    /**
+     * 写入系统日志
+     */
+    private void log(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex){
+        logger.error("全局异常拦截：", ex);
     }
 
 }

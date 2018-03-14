@@ -6,6 +6,13 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Component;
 
 /**
+ * 定时调度相关quartz
+ * Quartz与Spring的整合-Quartz中的job如何自动注入spring容器托管的对象
+ * SpringBeanJobFactory 框架整合将Quartz动态注入到Spring bean中
+ *
+ * 参考资料
+ * http://dark-wind-master.iteye.com/blog/1899899
+ *
  * 生成SpringBeanJobFactory的子类，达到重写自定义SpringBeanJobFactory的作用。
  * 用于对Job注入ApplicationContext以及autowire私有变量等
  *
