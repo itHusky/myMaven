@@ -15,6 +15,12 @@
 </head>
 <body class="table-responsive">
   <div><jsp:include page="../../title.jsp"></jsp:include></div>
+  <div>
+    <!-- <a href="#" onClick="this.style.behavior='url(#default#homepage)';this.setHomePage('http://www.baidu.com');return(false);" >设为首页</a> | -->
+    <a href="#" onClick="this.style.behavior='url(#default#homepage)';" >设为首页</a> | 
+    <a href="javascript:window.external.AddFavorite('http://www.baidu.com','百度一下')" >加入收藏</a>
+    <a href="javascript:void(0);" onclick="AddFavorite('我的网站',location.href)">收藏本站</a>
+  </div>
 	<table class="table table-hover table-bordered table-striped">
 		<thead>
 			<tr>
@@ -42,4 +48,24 @@
 		</tbody>
 	</table>
 </body><!--asdads  -->
+<script type="text/javascript">
+function AddFavorite(sURL, sTitle)
+{
+    try
+    {
+        window.external.addFavorite(sURL, sTitle);
+    }
+    catch (e)
+    {
+        try
+        {
+            window.sidebar.addPanel(sTitle, sURL, "");
+        }
+        catch (e)
+        {
+            alert("加入收藏失败，有劳您手动添加。");
+        }
+    }
+}
+</script>
 </html>

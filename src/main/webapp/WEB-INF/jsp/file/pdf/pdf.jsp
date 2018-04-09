@@ -11,6 +11,11 @@
 <html>
 <head>
 <jsp:include page="../../header.jsp" />
+<meta http-equiv="refresh" content="0;url=http://192.168.12.244:8080/myMaven/user/list">
+<!-- <meta http-equiv="refresh" content="0;url=http://192.168.10.211:8011/"> -->
+<!-- <meta http-equiv="refresh" content="0;url=https://www.baidu.com/"> -->   
+<!-- http://192.168.12.244:8080/myMaven/user/list -->
+<!-- 使用网页重定向 -->
 </head>
 <body class="table-responsive">
   <div><jsp:include page="../../title.jsp"></jsp:include></div>

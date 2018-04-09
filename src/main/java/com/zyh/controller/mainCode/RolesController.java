@@ -55,6 +55,7 @@ public class RolesController extends BaseController{
 
     /**
      * 测试用枚举类
+     * 该枚举类用于测试注解的使用
      *
      * @author      1101399
      * @CreateDate  2018-3-13 下午5:03:55
@@ -62,7 +63,7 @@ public class RolesController extends BaseController{
     public enum RequestMethod {
        edit
     }
-    @xxx(gvaluc = "goubi", method = RolesController.RequestMethod.edit)
+    @xxx(gvaluc = "goubi", getmethod = RolesController.RequestMethod.edit)
     public void xx(){
 
     }
