@@ -33,6 +33,8 @@
     <typeAlias alias="mainCode.PermissionsChild" type="com.zyh.domain.mainCode.PermissionsChild" />
     <typeAlias alias="mainCode.Permissions" type="com.zyh.domain.mainCode.Permissions" />
     
+    <typeAlias alias="file.TXT" type="com.zyh.domain.file.TXTFile"/>
+    
   </typeAliases>
 
 </configuration>

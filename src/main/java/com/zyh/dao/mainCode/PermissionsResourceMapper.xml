@@ -4,6 +4,7 @@
 <mapper namespace="com.zyh.dao.mainCode.PermissionsResourceMapper">
 
     <resultMap type="mainCode.PermissionsResource" id="baseResultMap">
+        <id property="id" column="id"/>
         <association property="permissions" column="permission_zid" javaType="mainCode.Permissions"
             select="com.zyh.dao.mainCode.PermissionsMapper.findById"/>
         <association property="resources" column="resource_id" javaType="mainCode.Resources"
@@ -64,24 +65,25 @@
          WHERE permission_zid = #{permissionId}
     </select>
     
-<!--     <insert id="insert" parameterType="mainCode.PermissionsResource" useGeneratedKeys="true">
-        .
-        .
-        .
+    <insert id="insert" parameterType="mainCode.PermissionsResource" useGeneratedKeys="true">
+        INSERT INTO resources_permission
+               (permission_zid,resource_id)
+        VALUES (#{permissions.permissionId},#{resources.resourceId})
     </insert>
     
     <update id="update" parameterType="mainCode.PermissionsResource">
-        .
-        .
-        .
-    </update> -->
+        UPDATE resources_permission
+           SET permission_zid = #{permissions.permissionId},
+               resource_id = #{resources.resourceId}
+         WHERE (id = #{id})
+    </update>
     
     <delete id="delete" parameterType="mainCode.PermissionsResource">
-        DELETE FROM resources_permission WHERE permission_zid = #{id}
+        DELETE FROM resources_permission WHERE id = #{id}
     </delete>
     
     <delete id="deleteById">
-        DELETE FROM resources_permission WHERE permission_zid = #{id}
+        DELETE FROM resources_permission WHERE id = #{id}
     </delete>
 
 </mapper>

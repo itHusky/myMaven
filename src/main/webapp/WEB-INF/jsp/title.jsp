@@ -1,10 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@taglib uri="zyhTag" prefix="zyh"%>
-<script type="text/javascript"  src="resources/widget/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
-<!-- JS配置文件没有和title在同一个文件的话不能实现下拉菜单的展开 -->
 <%-- <jsp:include page="header.jsp" /> --%>
-<%-- <jsp:include page="base.jsp"></jsp:include> --%>
+<jsp:include page="base.jsp"></jsp:include>
 <style type="text/css">
 html,body {
 	padding-top: 40px;
@@ -27,7 +25,7 @@ li>a>b{
 	               <div class="collapse navbar-collapse navbar-right">
 	                    <ul class="nav navbar-nav">
 	                         <li class="dropdown">
-								              <a href="#" class="dropdown-toggle glyphicon glyphicon-play-circle" data-toggle="dropdown"> 列表   <b class="caret"></b></a>
+								              <a href="#" class="dropdown-toggle glyphicon glyphicon-play-circle" data-toggle="dropdown" aria-expanded="true"> 列表   <b class="caret"></b></a>
 								              <ul class="dropdown-menu">
 								                <zyh:func uri="user/list">
 								                  <li><a href="user/list" class="glyphicon glyphicon-tree-conifer"> 主站</a></li>

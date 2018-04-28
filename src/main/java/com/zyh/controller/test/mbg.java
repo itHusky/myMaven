@@ -2,12 +2,12 @@
  * mbg_configuration.xml 文件配套  但是现在貌似除了点问题
  *
  * 参考资料：http://www.jb51.net/article/82021.htm
- */
+ *//*
 
 private static void generateMbgConfiguration() {
-    /*
+
      * Mybatis自带Generator工具生成相应东西
-     */
+
     List<String> warnings = new ArrayList<String>();
     boolean overwrite = true;
     File configFile = new File("./src/david/mbg/mbg_configuration.xml");
@@ -41,4 +41,4 @@ private static void generateMbgConfiguration() {
     }
 
     System.out.println("生成Mybatis配置成功！");
-  }
+  }*/

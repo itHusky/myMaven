@@ -6,6 +6,8 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -13,6 +15,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.zyh.controller.base.BaseController;
+import com.zyh.domain.file.TXTFile;
+import com.zyh.service.file.ITXTFileService;
 import com.zyh.util.WebContextUtils;
 
 @Controller
@@ -20,6 +24,9 @@ import com.zyh.util.WebContextUtils;
 public class ReadFileController extends BaseController {
 
 	private final Logger log = LoggerFactory.getLogger(ReadFileController.class);
+
+	@Resource
+	private ITXTFileService txtFileService;
 
 	// @Resource
 	// private IReadFile readFile;
@@ -60,6 +67,9 @@ public class ReadFileController extends BaseController {
 		log.info("............" + listFile.size());
 
 		model.put("listFile", listFile);
+
+		TXTFile filetxt = txtFileService.findByName();
+		model.put("book", filetxt.getFileName());
 
 		return "file/pdf/pdf";
 	}

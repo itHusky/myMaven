@@ -12,7 +12,7 @@
 <title>X界</title>
 <base href="<%=basePath%>">
 <link rel="shortcut icon" href="/file/favicon.ico" />
-<jsp:include page="base.jsp"></jsp:include><%-- 因为header.jsp文件和base.jsp文件在同一个文件目录中所以不用../../base.jsp --%>
+<%-- <jsp:include page="base.jsp"></jsp:include> --%><%-- 因为header.jsp文件和base.jsp文件在同一个文件目录中所以不用../../base.jsp --%>
 <style type="text/css">
  .table th, .table td { 
 text-align: center;

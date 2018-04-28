@@ -65,28 +65,25 @@
   
   <select id="loginSystem" resultType="int">
     SELECT COUNT(0)
-      FROM SYS_USER
-     WHERE user_no = #{userNo}
-       AND user_password = #{userPassword}
-     <include refid="sqlOrderBy"/>
+        FROM SYS_USER
+       WHERE user_no = #{userNo}
+         AND user_password = #{userPassword}
   </select>
-  
-  <select id="findByNameAndPass"  resultMap="baseResultMap">
+    
+  <select id="findByNameAndPass" resultMap="baseResultMap">
     SELECT *
       FROM SYS_USER
      WHERE user_no = #{userNo}
        AND user_password = #{ciphertext}
      <include refid="sqlOrderBy"/>
   </select>
-  
+ 
   <insert id="insert" parameterType="mainCode.UserLogin" useGeneratedKeys="true" keyProperty="userId">
         INSERT INTO SYS_USER(
-            user_id,
             user_no,
             user_name,
             user_password
         ) VALUES (
-            #{userId},
             #{userNo},
             #{userName},
             #{userPassword}
@@ -99,9 +96,10 @@
                user_no = #{userNo},
                user_name = #{userName},
                user_password = #{userPassword}
+         WHERE user_id = #{userId}
     </update>
-    
-    <delete id="delete"  parameterType="mainCode.UserLogin">
+
+    <delete id="delete" parameterType="mainCode.UserLogin">
         DELETE FROM SYS_USER WHERE user_id = #{userId}
     </delete>
     

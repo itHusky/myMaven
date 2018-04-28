@@ -4,7 +4,8 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
          version="2.4">
   <!-- 定义来了web应用的名字 -->
-  <display-name>zyh System</display-name>
+  <display-name>myMaven</display-name>
+  <!-- <display-name>zyh</display-name> -->
   <!-- 在web项目中，当用户在浏览器中输入的URL不包含某个特定的Servlet、html、jsp页面时，web.xml中<welcome-file-list>标签元素就会指定显示的默认文件 -->
   <welcome-file-list>
     <welcome-file>/WEB-INF/jsp/login.jsp</welcome-file>

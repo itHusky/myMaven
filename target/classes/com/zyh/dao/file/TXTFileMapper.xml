@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zyh.dao.file.TXTFileMapper">
+    <!--  返回数据Map  -->
+    <resultMap type="file.TXT" id="baseResultMapTXT">
+        <id property="fileId" column="file_id"/>
+        <result property="fileName" column="file_name"/>
+        <result property="displayName" column="display_name"/>
+        <result property="extension" column="extension"/>
+        <result property="contentType" column="content_type"/>
+        <result property="fileData" column="file_data"/>
+        <result property="fileSize" column="file_size"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+        
+    <sql id="sqlColumns">
+        *
+    </sql>
+    
+    <select id="findAllName" resultMap="baseResultMapTXT">
+        SELECT
+            file_id AS 'fileId',
+            file_name AS 'fileName',
+            display_name AS 'displayName',
+            extension AS 'extension',
+            content_type AS 'contentType',
+            1 AS 'fileData',
+            file_size AS 'fileSize',
+            create_time AS 'createTime'
+          FROM file_txt
+    </select>
+    
+    <select id="findById" resultMap="baseResultMapTXT">
+         SELECT
+            file_id AS 'fileId',
+            file_name AS 'fileName',
+            display_name AS 'displayName',
+            extension AS 'extension',
+            content_type AS 'contentType',
+            1 AS 'fileData',
+            file_size AS 'fileSize',
+            create_time AS 'createTime'
+          FROM file_txt
+          WHERE file_id = #{id}
+    </select>
+    
+    <select id="findByName" resultMap="baseResultMapTXT">
+        SELECT
+            file_id AS 'fileId',
+            file_name AS 'fileName',
+            display_name AS 'displayName',
+            extension AS 'extension',
+            content_type AS 'contentType',
+            1 AS 'fileData',
+            file_size AS 'fileSize',
+            create_time AS 'createTime'
+          FROM file_txt
+         WHERE file_name = #{name}
+    </select>
+    
+    <select id="findByAllName" resultMap="baseResultMapTXT">
+        SELECT
+            file_id AS 'fileId',
+            file_name AS 'fileName',
+            display_name AS 'displayName',
+            extension AS 'extension',
+            content_type AS 'contentType',
+            1 AS 'fileData',
+            file_size AS 'fileSize',
+            create_time AS 'createTime'
+          FROM file_txt
+    </select>
+    
+    <select id="findByAll" resultMap="baseResultMapTXT">
+        SELECT
+            file_id AS 'fileId',
+            file_name AS 'fileName',
+            display_name AS 'displayName',
+            extension AS 'extension',
+            content_type AS 'contentType',
+            1 AS 'fileData',
+            file_size AS 'fileSize',
+            create_time AS 'createTime'
+          FROM file_txt
+    </select>
+        
+    <!-- 参数类型分别Map与Type 之间不同
+    之间的不同之处如同名称一样一个是map表一个是Type类：
+    虽然没测试过但是有一个猜测一个可以指向本文件中的建立的字段对应map
+    另一个可以指向文件中的domain类，而类之中又可以在mybatis配置文件中建立类与类别名之间的对应关系 -->
+    <!-- <insert id="insert_test_one" parameterMap="parameterMaptxt"></insert> -->
+    <insert id="insert_tets_two" parameterType="file.txt"></insert>
+	    <!--   
+	                                    出现BUG的问题的现象分析：参数类型parameterMap 存在问题  
+	                                    解决方案：MyBatis知识点学习
+                parameterType or parameterMap
+	    -->
+<!--     <insert id="insert" parameterMap="baseResultMapTXT" useGeneratedKeys="true">
+        INSERT INTO file_txt(
+            file_id,
+            file_name,
+            display_name,
+            extension,
+            content_type,
+            file_data,
+            file_size,
+            create_time
+        ) VALUES (
+            #{fileId},
+            #{fileName},
+            #{displayName},
+            #{extension},
+            #{contentType},
+            #{fileData},
+            #{fileSize},
+            #{createTime}
+        )
+    </insert> -->
+    
+<!--     <update id="update" parameterMap="baseResultMapTXT">
+        UPDATE file_txt
+           SET file_name = #{file_name},
+               file_size = #{size}
+         WHERE file_id=#{id}
+    </update> -->
+    
+<!-- <delete id="delete" parameterMap="baseResultMapTXT">
+        DELETE FROM file_txt WHERE file_id = #{id}
+    </delete> -->
+
+    <delete id="deleteId">
+        DELETE FROM file_txt WHERE file_id = #{id}
+    </delete>
+    
+</mapper>

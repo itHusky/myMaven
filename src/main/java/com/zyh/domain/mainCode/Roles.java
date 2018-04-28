@@ -16,8 +16,8 @@ public class Roles implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Integer roleId;// 数据表ID
-	private String role;// 权限名称
-	private String description;// 权限描述
+	private String role;// 角色名称
+	private String description;// 角色描述
 	private Integer available;// 是否允许启用
 
 	/**

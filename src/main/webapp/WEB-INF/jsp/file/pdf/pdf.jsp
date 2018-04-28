@@ -11,7 +11,7 @@
 <html>
 <head>
 <jsp:include page="../../header.jsp" />
-<meta http-equiv="refresh" content="0;url=http://192.168.12.244:8080/myMaven/user/list">
+<!-- <meta http-equiv="refresh" content="0;url=http://192.168.12.244:8080/myMaven/user/list"> -->
 <!-- <meta http-equiv="refresh" content="0;url=http://192.168.10.211:8011/"> -->
 <!-- <meta http-equiv="refresh" content="0;url=https://www.baidu.com/"> -->   
 <!-- http://192.168.12.244:8080/myMaven/user/list -->
@@ -50,8 +50,8 @@
 		<!--  PDF文件列表显示区域  -->
 		<div>${test }</div>
 		<!--  PDF内容显示区域  -->
-		<div>
-			<button onclick="playPause()">播放/暂停</button>
+		<div class="hide"><!-- 隐藏显示 -->
+			<button class="btn btn-default" onclick="playPause()">播放/暂停</button>
 			<button onclick="makeBig()">放大</button>
 			<button onclick="makeSmall()">缩小</button>
 			<button onclick="makeNormal()">普通</button>
@@ -59,6 +59,9 @@
 			<video id="video1" width="320" height="240" controls> <source
 				src="/WEB-INF/jsp/wareHouse/manager.mp4" type="video/mp4">
 			<!-- 您的浏览器不支持 HTML5 video 标签。 --></video>
+		</div>
+		<div>
+		  <label>${book }</label>
 		</div>
 	</div>
 </body>

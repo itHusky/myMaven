@@ -19,6 +19,7 @@ import com.zyh.domain.mainCode.RolePermission;
 import com.zyh.domain.mainCode.Roles;
 import com.zyh.domain.mainCode.User;
 import com.zyh.domain.mainCode.UserLogin;
+import com.zyh.exception.BusinessException;
 import com.zyh.service.mainCode.IPermissionsResourceService;
 import com.zyh.service.mainCode.IRolePermissionService;
 import com.zyh.service.mainCode.IUserLoginService;
@@ -167,16 +168,21 @@ public class LoginController {
         User user = userService.findByUserLogin(userLogin);
 
         // 并存储用户角色的权限信息以便通过自定义标签进行显示处理限制
-        Roles xx = user.getRoles();//用户角色信息
+        Roles userRoles = new Roles();
+        if(user != null){
+            userRoles = user.getRoles();//用户角色信息
+        }else{
+            throw new BusinessException("用户角色信息不存在！");
+        }
 
      /*   Integer idRole = user.getRoles().getRoleId();
         if (idRole == 1){
-            List<PermissionsResource> zz = permissionsResourceService.findAll();
+            List<PermissionsResource> permissAndResource = permissionsResourceService.findAll();
 
             // 添加用户拥有的URL资源
             List<String> URIList = new ArrayList<String>();
-            for(int i = 0;i < zz.size(); i++){
-                PermissionsResource func = zz.get(i);
+            for(int i = 0;i < permissAndResource.size(); i++){
+                PermissionsResource func = permissAndResource.get(i);
                 URIList.add(func.getResources().getResources());
             }
             request.getSession().setAttribute("URIList", URIList);
@@ -189,16 +195,17 @@ public class LoginController {
              * 一个子级权限对应多个URL资源
              *
              */
-            RolePermission yy = rolePermissionService.findByRolesId(xx.getRoleId());
-            List<PermissionsResource> zz = permissionsResourceService.findByPermissionId(yy.getPermissions().getPermissionId());
+            RolePermission roleAndPermiss = rolePermissionService.findByRolesId(userRoles.getRoleId());
+            List<PermissionsResource> permissAndResource = permissionsResourceService.findByPermissionId(roleAndPermiss.getPermissions().getPermissionId());
 
             // 添加用户拥有的URL资源
-            List<String> URIList = new ArrayList<String>();
-            for(int i = 0;i < zz.size(); i++){
-                PermissionsResource func = zz.get(i);
+            // 将用户的权限列表中的URL依次添加到指定存放URL权限列表的List中去
+            List<String> URIList = new ArrayList<String>();// 权限List
+            for(int i = 0;i < permissAndResource.size(); i++){
+                PermissionsResource func = permissAndResource.get(i);
                 URIList.add(func.getResources().getResources());
             }
-            request.getSession().setAttribute("URIList", URIList);
+            request.getSession().setAttribute("URIList", URIList);// 将权限List保存如果进行权限对比的话讲本地权限信息读出即可
     }
 
     /**

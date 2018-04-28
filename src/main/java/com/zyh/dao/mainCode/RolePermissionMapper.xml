@@ -4,6 +4,7 @@
 <mapper namespace="com.zyh.dao.mainCode.RolePermissionMapper">
 
     <resultMap type="mainCode.RolePermission" id="baseResultMap">
+        <id property="id" column="id"/>
         <association property="roles" column="role_id" javaType="mainCode.Roles"
             select="com.zyh.dao.mainCode.RolesMapper.findById" />
         <association property="permissions" column="permission_zid" javaType="mainCode.PermissionsChild"
@@ -87,6 +88,7 @@
         UPDATE roles_permission
            SET role_id = #{roles.roleId}
                permission_zid = #{permissions.permissionId}
+         WHERE id = #{id}
     </update>
     
     <delete id="delete" parameterType="mainCode.RolePermission">

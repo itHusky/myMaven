@@ -71,6 +71,7 @@
            SET role = #{role},
                description = #{description},
                available = #{available}
+        WHERE role_id = #{roleId}
     </update>
     
     <delete id="delete"  parameterType="mainCode.Roles">

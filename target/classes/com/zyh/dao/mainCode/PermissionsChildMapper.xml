@@ -50,10 +50,12 @@
         ORDER BY permission_zid DESC
     </sql>
     
+    <!-- 查询单条记录增加：LIMIT 1有助于MySQL查询性能优化  -->
     <select id="findById" resultMap="baseResultMap">
         SELECT <include refid="sqlColumns" />
           FROM permission_ch
          WHERE permission_zid = #{id}
+         LIMIT 1
     </select>
     
     <select id="findAll" resultMap="baseResultMap">
@@ -82,15 +84,18 @@
     </select>
     
     <insert id="insert" parameterType="mainCode.PermissionsChild" useGeneratedKeys="true">
-        .
-        .
-        .
+        INSERT INTO permission_ch
+               (permission_zid,description,available,permission_pid)
+        VALUES (#{Permissions},#{description},#{available},#{permissionPId}.permissionId)
     </insert>
     
     <update id="update" parameterType="mainCode.PermissionsChild">
-        .
-        .
-        .
+        UPDATE permission_ch
+           SET permission_zid = #{Permissions},
+               description = #{description},
+               available = #{available},
+               permission_pid = ${permissionPId.permissionId}
+         WHERE (permission_zid = ${permissionId})
     </update>
     
     <delete id="delete" parameterType="mainCode.PermissionsChild">

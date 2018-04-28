@@ -75,6 +75,7 @@
            SET permission = #{Permissions},
                description = #{description},
                available = #{available}
+         WHERE permission_id = #{permissionId}
     </update>
     
     <delete id="delete" parameterType="mainCode.Permissions">
