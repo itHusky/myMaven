@@ -23,4 +23,12 @@ public class TestController extends BaseController {
 		log.error("test:" + xx);
 		return "login/test";
 	}
+
+	/**
+	 * XXX
+	 *
+	 * ResponseBody 注解详解
+	 *
+	 * https://blog.csdn.net/qq_35246620/article/details/59620858
+	 */
 }

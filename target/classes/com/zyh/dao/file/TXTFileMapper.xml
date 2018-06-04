@@ -31,6 +31,19 @@
           FROM file_txt
     </select>
     
+    <select id="findAll" resultMap="baseResultMapTXT">
+        SELECT
+            file_id AS 'fileId',
+            file_name AS 'fileName',
+            display_name AS 'displayName',
+            extension AS 'extension',
+            content_type AS 'contentType',
+            1 AS 'fileData',
+            file_size AS 'fileSize',
+            create_time AS 'createTime'
+          FROM file_txt
+    </select>
+    
     <select id="findById" resultMap="baseResultMapTXT">
          SELECT
             file_id AS 'fileId',
@@ -39,6 +52,20 @@
             extension AS 'extension',
             content_type AS 'contentType',
             1 AS 'fileData',
+            file_size AS 'fileSize',
+            create_time AS 'createTime'
+          FROM file_txt
+          WHERE file_id = #{id}
+    </select>
+    
+    <select id="findDataById" resultMap="baseResultMapTXT">
+         SELECT
+            file_id AS 'fileId',
+            file_name AS 'fileName',
+            display_name AS 'displayName',
+            extension AS 'extension',
+            content_type AS 'contentType',
+            file_data AS 'fileData',
             file_size AS 'fileSize',
             create_time AS 'createTime'
           FROM file_txt
@@ -96,7 +123,8 @@
 	                                    解决方案：MyBatis知识点学习
                 parameterType or parameterMap
 	    -->
-<!--     <insert id="insert" parameterMap="baseResultMapTXT" useGeneratedKeys="true">
+     <!-- <insert id="insert" parameterMap="baseResultMapTXT" useGeneratedKeys="true"> -->
+     <insert id="insert" parameterType="file.txt" useGeneratedKeys="true">
         INSERT INTO file_txt(
             file_id,
             file_name,
@@ -116,7 +144,7 @@
             #{fileSize},
             #{createTime}
         )
-    </insert> -->
+    </insert>
     
 <!--     <update id="update" parameterMap="baseResultMapTXT">
         UPDATE file_txt

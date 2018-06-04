@@ -19,9 +19,9 @@ li>a>b{
 	   <div class="row">
 	       <nav class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
 	           <div class="container-fluid" style="background-color:#333399;">
-	               <dir class="navbar-header">
+	               <div class="navbar-header">
                       <a class="navbar-brand" style="color:#FFCC33;" href="user/list">one world one xxx</a>
-	               </dir><!-- navbar-header -->
+	               </div><!-- navbar-header -->
 	               <div class="collapse navbar-collapse navbar-right">
 	                    <ul class="nav navbar-nav">
 	                         <li class="dropdown">
@@ -40,8 +40,8 @@ li>a>b{
 								                <zyh:func uri="video/list">
 								                  <li><a href="video/list" class="glyphicon glyphicon-eye-open"> 视频</a></li>
 								                </zyh:func>
-								                <zyh:func uri="video/get">
-                                                  <li><a href="video/get" class="glyphicon glyphicon-eye-open"> 视频2</a></li>
+								                <zyh:func uri="downorup/list">
+                                                  <li><a href="downorup/list" class="glyphicon glyphicon-eye-open"> up&dn</a></li>
                                                 </zyh:func>
 								                <li role="presentation" class="divider"></li>
 								                <zyh:func uri="user/list">

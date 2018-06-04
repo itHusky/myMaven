@@ -5,7 +5,7 @@
  * 动态向上飘飞字符
  */
 (function() {
-	var coreSocialistValues = [ "独立", "自尊", "自爱","自信","自强", "大爷过来玩呗" ], index = Math.floor(Math
+	var coreSocialistValues = [ "独立", "自尊", "自爱","自信","自强", "大爷过来玩呗" ,"￣へ￣"], index = Math.floor(Math
 			.random()
 			* coreSocialistValues.length);
 	document.body

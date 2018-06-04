@@ -47,5 +47,10 @@ System.exit(status)不管status为何值都会退出程序。
         return txtFileMapper.findByName(name);
     }
 
+    @Override
+    public TXTFile findDataById(Integer fileid) {
+        return txtFileMapper.findDataById(fileid);
+    }
+
 
 }

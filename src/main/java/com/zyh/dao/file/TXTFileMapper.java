@@ -18,4 +18,6 @@ public interface TXTFileMapper extends MybatisMapper<TXTFile,Integer>{
 
     TXTFile findByName(@Param("name") String name);
 
+    TXTFile findDataById(@Param("id") Integer id);
+
 }
