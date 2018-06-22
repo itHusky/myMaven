@@ -2,10 +2,14 @@ package com.zyh.service.file.impl;
 
 import javax.annotation.Resource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.zyh.dao.base.MybatisMapper;
 import com.zyh.dao.file.TXTFileMapper;
+import com.zyh.domain.base.DataSource;
+import com.zyh.domain.base.DataSourceType;
 import com.zyh.domain.file.TXTFile;
 import com.zyh.service.base.impl.BaseServiceImpl;
 import com.zyh.service.file.ITXTFileService;
@@ -13,6 +17,7 @@ import com.zyh.service.file.ITXTFileService;
 @Service
 public class TXTFileServiceImpl extends BaseServiceImpl<TXTFile, Integer> implements ITXTFileService{
 
+    private static final Logger log = LoggerFactory.getLogger(TXTFileServiceImpl.class);
     private TXTFileMapper txtFileMapper;
 
     @Override
@@ -24,6 +29,7 @@ public class TXTFileServiceImpl extends BaseServiceImpl<TXTFile, Integer> implem
     }
 
     @Override
+    @DataSource(DataSourceType.SLAVE)
     public TXTFile findByName() {
         String name = "test";
 
@@ -49,6 +55,8 @@ System.exit(status)不管status为何值都会退出程序。
 
     @Override
     public TXTFile findDataById(Integer fileid) {
+        log.info("执行测试.........................");
+        log.info("执行测试...",DataSourceType.SLAVE);
         return txtFileMapper.findDataById(fileid);
     }
 

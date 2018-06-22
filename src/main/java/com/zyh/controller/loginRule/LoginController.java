@@ -131,7 +131,6 @@ public class LoginController {
              * 根目录，并根据web.xml中配置的默认首页加载默认页面。 return "redirect:" + url; 重定向到URL中去
              */
             return "redirect:/file/list";
-
         } else {
             String message = "[错误信息] - [用户编码或用户密码输入错误！]";
             model.put("message", message);

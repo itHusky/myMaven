@@ -107,7 +107,8 @@
 								<td>${file.fileSize }</td>
 								<td><fmt:formatDate value="${file.createTime }" type="both" />
 								<td>
-								    <a><i>下载</i></a>
+								    <a href="downorup/downloads?id=${file.fileId }"><i>下载</i></a>
+								    <a href="javascript:downForm(${file.fileId },'${file.displayName }','${file.extension }')"><i>下载</i></a>
 								    <a href="downorup/show?id=${file.fileId }"><i>show</i></a>
 								</td>
 							</tr>
@@ -121,129 +122,132 @@
 </body>
 <link rel="stylesheet" type="text/css" href="resources/widget/webuploader-0.1.5/webuploader.css" />
 <script type="text/javascript" src="resources/widget/webuploader-0.1.5/webuploader.js"></script>
+<script type="text/javascript" src="resources/app/file.js"></script>
 <script type="text/javascript">
 var applicationPath = window.applicationPath === "" ? "" : window.applicationPath || "../../";
-// console.log(applicationPath);
-// 文件上传
-jQuery(function () {
-    var $ = jQuery,
-        $list = $('#thelist'),
-        $btn = $('#ctlBtn'),
-        state = 'pending',
-        uploader;
-    uploader = WebUploader.create({
-        // 不压缩image
-        resize: false, 
 
-        // swf文件路径
-        //swf: applicationPath + 'Script/webuploader/Uploader.swf',
-        swf: applicationPath + 'resources/widget/webuploader-0.1.5/Uploader.swf',
+	/*
+	WebUploader 插件是通过使用require.js技术
+	 将一个一个的模块封装起来并相互调用依赖从而通过一个js文件中集成所有模块
+	 在外界中进行调用从而实现相应功能的实现
+	 */
+	// 文件上传
+	jQuery(function() {
+		var $ = jQuery, $list = $('#thelist'), $btn = $('#ctlBtn'), state = 'pending', uploader;
+		uploader = WebUploader.create({
+			// 不压缩image
+			resize : false,
 
-        // 文件接收服务端。
-//        server: 'UploaderFileByBaidu.ashx',
-        server: 'downorup/upload',
+			// swf文件路径
+			//swf: applicationPath + 'Script/webuploader/Uploader.swf',
+			swf : applicationPath
+					+ 'resources/widget/webuploader-0.1.5/Uploader.swf',
 
-        // 选择文件的按钮。可选。
-        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
-        pick: '#picker'
+			// 文件接收服务端。
+			//        server: 'UploaderFileByBaidu.ashx',
+			server : 'downorup/upload',
 
-    }); 
+			// 选择文件的按钮。可选。
+			// 内部根据当前运行是创建，可能是input元素，也可能是flash.
+			pick : '#picker'
 
-    // 当有文件添加进来的时候
-    uploader.on('fileQueued', function (file) {
-        // 原来的代码中有bug 多出了一'>'符号
-        //$list.append('<div background-color: #f5f5f5; color: #000000;">' + file.id + '" class="item">' +
-        /*
-        $list.append('<div background-color: #f5f5f5; color: #000000;"' + file.id + '" class="item">' +
-            '<h4 class="info">' + file.name + '</h4>' +
-            '<p class="state">等待上传...</p>' +
-        '</div>');
-        */
-        var $li = $(
-                '<div id="' + file.id + '" class="file-item thumbnail">' +
-                    '<img>' +
-                    '<div class="info">' + file.name + '</div>' +
-                '</div>'
-                ),
-            $img = $li.find('img');
+		});
 
+		// 当有文件添加进来的时候
+		uploader
+				.on(
+						'fileQueued',
+						function(file) {
+							// 原来的代码中有bug 多出了一'>'符号
+							//$list.append('<div background-color: #f5f5f5; color: #000000;">' + file.id + '" class="item">' +
+							/*
+							$list.append('<div background-color: #f5f5f5; color: #000000;"' + file.id + '" class="item">' +
+							    '<h4 class="info">' + file.name + '</h4>' +
+							    '<p class="state">等待上传...</p>' +
+							'</div>');
+							 */
+							var $li = $('<div id="' + file.id + '" class="file-item thumbnail">'
+									+ '<img>'
+									+ '<div class="info">'
+									+ file.name + '</div>' + '</div>'), $img = $li
+									.find('img');
 
-        // $list为容器jQuery实例
-        $list.append( $li );
+							// $list为容器jQuery实例
+							$list.append($li);
 
-        // 创建缩略图
-        // 如果为非图片文件，可以不用调用此方法。
-        // thumbnailWidth x thumbnailHeight 为 100 x 100
-        uploader.makeThumb( file, function( error, src ) {
-            if ( error ) {
-                $img.replaceWith('<span>非图片文件不能预览</span>');
-                return;
-            }
+							// 创建缩略图
+							// 如果为非图片文件，可以不用调用此方法。
+							// thumbnailWidth x thumbnailHeight 为 100 x 100
+							uploader.makeThumb(file, function(error, src) {
+								if (error) {
+									$img.replaceWith('<span>非图片文件不能预览</span>');
+									return;
+								}
 
-            $img.attr( 'src', src );
-        }, 100, 100 );
-        //  }, thumbnailWidth, thumbnailHeight );
+								$img.attr('src', src);
+							}, 100, 100);
+							//  }, thumbnailWidth, thumbnailHeight );
 
-    });
+						});
 
-    // 文件上传过程中创建进度条实时显示。
-    uploader.on('uploadProgress', function (file, percentage) {
-    	console.log("开始上传！");
-    	
-    	
-        var $li = $('#' + file.id),
-            $percent = $li.find('.progress .progress-bar'); 
-        console.log($percent);
-        console.log($li);
-        console.log(!$percent.length);
-        // 现在问题是没有找到相应的内容  $li
-        
-        // 避免重复创建
-        if (!$percent.length) {
-            $percent = $('<div class="progress progress-striped active">' +
-              '<div class="progress-bar" role="progressbar" style="width: 0%">' +
-              '</div>' +
-            '</div>').appendTo($li).find('.progress-bar');
-        }
-        $li.find('p.state').text('上传中');
-        $percent.css('width', percentage * 100 + '%');
+		// 文件上传过程中创建进度条实时显示。
+		uploader
+				.on(
+						'uploadProgress',
+						function(file, percentage) {
+							console.log("开始上传！");
 
-    });
+							var $li = $('#' + file.id), $percent = $li
+									.find('.progress .progress-bar');
+							// 现在问题是没有找到相应的内容  $li
 
-    uploader.on('uploadSuccess', function (file) {
-        $('#' + file.id).find('p.state').text('已上传');
-    });
+							// 避免重复创建
+							if (!$percent.length) {
+								$percent = $(
+										'<div class="progress progress-striped active">'
+												+ '<div class="progress-bar" role="progressbar" style="width: 0%">'
+												+ '</div>' + '</div>')
+										.appendTo($li).find('.progress-bar');
+							}
+							$li.find('p.state').text('上传中');
+							$percent.css('width', percentage * 100 + '%');
 
-    uploader.on('uploadError', function (file) {
-        $('#' + file.id).find('p.state').text('上传出错');
-    });
+						});
 
-    uploader.on('uploadComplete', function (file) {
-        $('#' + file.id).find('.progress').fadeOut();
-    });
-    uploader.on('all', function (type) {
-        if (type === 'startUpload') {
-            state = 'uploading';
-        } else if (type === 'stopUpload') {
-            state = 'paused';
-        } else if (type === 'uploadFinished') {
-            state = 'done';
-        }
-        if (state === 'uploading') {
-            $btn.text('暂停上传');
-        } else {
-            $btn.text('开始上传');
-        }
-    });
+		uploader.on('uploadSuccess', function(file) {
+			$('#' + file.id).find('p.state').text('已上传');
+		});
 
-    $btn.on('click', function () {
-        if (state === 'uploading') {
-            uploader.stop();
-        } else {
-            uploader.upload();
-        }
-    });
-});
+		uploader.on('uploadError', function(file) {
+			$('#' + file.id).find('p.state').text('上传出错');
+		});
+
+		uploader.on('uploadComplete', function(file) {
+			$('#' + file.id).find('.progress').fadeOut();
+		});
+		uploader.on('all', function(type) {
+			if (type === 'startUpload') {
+				state = 'uploading';
+			} else if (type === 'stopUpload') {
+				state = 'paused';
+			} else if (type === 'uploadFinished') {
+				state = 'done';
+			}
+			if (state === 'uploading') {
+				$btn.text('暂停上传');
+			} else {
+				$btn.text('开始上传');
+			}
+		});
+
+		$btn.on('click', function() {
+			if (state === 'uploading') {
+				uploader.stop();
+			} else {
+				uploader.upload();
+			}
+		});
+	});
 </script>
 <script type="text/javascript">
 function openFile(){

@@ -1,7 +1,9 @@
 package com.zyh.controller.file;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +20,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.zyh.controller.base.BaseController;
 import com.zyh.domain.file.TXTFile;
@@ -35,14 +38,13 @@ import com.zyh.vo.base.JsonResult;
  * @author 1101399
  * @CreateDate 2018-5-2 上午9:34:01
  */
+@SuppressWarnings("unused")
 @Controller
 @RequestMapping("/downorup")
 public class DownOrUploadController extends BaseController {
 
     // 控制台打印语句
     private final Logger log = LoggerFactory.getLogger(DownOrUploadController.class);
-
-    private final String serverPath = "e:/";
 
     @Resource
     private ITXTFileService txtFileService;
@@ -92,10 +94,11 @@ public class DownOrUploadController extends BaseController {
      */
     // @RequestMapping("/download")
     @RequestMapping(value = "/download", method = RequestMethod.POST, headers = "content-type = text / *")
-    public String download(@RequestParam(name = "file", required = true) Integer fileid,
+    public String download(@RequestParam(name = "id", required = true) Integer fileid,
             ModelMap model, Integer... fil) {
+        System.out.println("tes11t");
         //
-        // XXX 这个不应该设置为非必须参数-下载文件不传递ID值怎么下载？！
+        // 这个不应该设置为非必须参数-下载文件不传递ID值怎么下载？！
         // 方法一、required = true 必须参数 默认
         // 方法一、required = false 非必须参数
         // 方法二、传递参数 还可以直接使用 Integer fileid标示着不属于必须参数，在使用时小心当前参数为空的情况
@@ -104,24 +107,14 @@ public class DownOrUploadController extends BaseController {
         // 方法三、Integer x = fil[0];不定长参数是java的一个独特写法
         // Python 中也有不定长参数
         /*
-         Python 不定长参数一、      加了星号（*）的变量名会存放所有未命名的变量参数，不能存放字典dict，否则报错
-         def multiple(arg, *args):
-             print "arg: ", arg
-             #打印不定长参数
-             for value in args:
-                 print "other args:", value
-         if __name__ == '__main__':
-             multiple(1,'a',True)
-        Python 不定长参数一、          加了星号（**）的变量名会存放所有未命名的变量参数，可以存放字典dict
-        def multiple2(**args):
-            #打印不定长参数
-             for key in args:
-                 print key + ":" + bytes(args[key])
-        if __name__ == '__main__':
-             multiple2(name='Amy', age=12, single=True)
+         * Python 不定长参数一、 加了星号（*）的变量名会存放所有未命名的变量参数，不能存放字典dict，否则报错 def
+         * multiple(arg, *args): print "arg: ", arg #打印不定长参数 for value in args:
+         * print "other args:", value if __name__ == '__main__':
+         * multiple(1,'a',True) Python 不定长参数一、
+         * 加了星号（**）的变量名会存放所有未命名的变量参数，可以存放字典dict def multiple2(**args): #打印不定长参数
+         * for key in args: print key + ":" + bytes(args[key]) if __name__ ==
+         * '__main__': multiple2(name='Amy', age=12, single=True)
          */
-        Integer x = fil[0];
-
         /**
          * 下载文件大小显示 下载文件路径选择 下载文件进度显示 下载文件界面遮罩
          */
@@ -148,6 +141,63 @@ public class DownOrUploadController extends BaseController {
         // 考虑是将数据按照特定协议传递到前台还是采用其他方法 或者采用其他办法3
 
         return "downorup/list";
+    }
+
+    /**
+     * 下载 1、首选webuploader插件完成下载步骤 2、同时不放弃其他下载文件方式
+     */
+    @RequestMapping(value = "/download", method = RequestMethod.GET)
+    @ResponseBody
+    public JsonResult<String> download(@RequestParam(name = "id") Integer fileid) {
+        System.out.println("test");// GET|POST 方法 测试通过，使用GET方法传递显示
+        TXTFile file = txtFileService.findDataById(fileid);
+        if (file != null) {
+            return new JsonResult<String>(true, file.getFileData());
+        } else {
+            return new JsonResult<String>(false, "文件为空！");
+        }
+    }
+
+    // @RequestMapping(value = "/download", method = RequestMethod.POST)
+    @ResponseBody
+    public JsonResult<TXTFile> download_post(@RequestParam(name = "id") Integer fileid) {
+        System.out.println("test_post");// GET|POST 方法 测试通过，使用GET方法传递显示
+        TXTFile file = txtFileService.findDataById(fileid);
+        if (file != null) {
+            // 传递文件类到前台
+            return new JsonResult<TXTFile>(true, "下载成功", file);
+        } else {
+            return new JsonResult<TXTFile>(false, "文件为空！");
+        }
+    }
+
+    /* @RequestMapping(value = "/download", method = RequestMethod.POST) */
+    @RequestMapping(value = "/downloads", method = RequestMethod.GET)
+    public void test(@RequestParam(name = "id") Integer fileid, HttpServletRequest request,
+            HttpServletResponse response) throws IOException {
+        TXTFile file = txtFileService.findDataById(fileid);
+        String test = file.getFileData();
+
+        InputStream in = new ByteArrayInputStream(test.getBytes());// String
+                                                                   // 写入输入流
+        String fileName = file.getFileName()/* + "." + file.getExtension() */;
+
+        response.setContentLength(new Long(file.getFileSize()).intValue());
+        response.setCharacterEncoding("utf-8");
+        response.setContentType("multipart/form-data");
+        String agent = request.getHeader("USER-AGENT");// 浏览器类型 版本号等
+        if (null != agent && -1 != agent.indexOf("Mozilla")) {
+            fileName = new String(fileName.getBytes("UTF-8"), "ISO8859-1");
+        }
+        response.setHeader("Content-Disposition", "attachment;fileName=" + fileName);
+        OutputStream os = response.getOutputStream();
+        byte[] b = new byte[4096];
+        int length;
+        while ((length = in.read(b)) > 0) {
+            os.write(b, 0, length);
+        }
+        os.close();
+        in.close();
     }
 
     /**
@@ -179,83 +229,32 @@ public class DownOrUploadController extends BaseController {
         String data = null;
         String name = null;
         String size = null;
-
-        // log.debug("直接参数传递|"+file);
-        // log.debug("直接参数传递|"+fileName);
-
-        /**
-         * // 方式废弃 // getInputStream() & getReader() 请求只能调用一次 if
-         * (request.getReader() != null) { String str = null; BufferedReader is
-         * = request.getReader(); while((str = is.readLine()) != null){ //
-         * 空行不能显示出来 log.info("Reader:"+str); }
-         *
-         * do{ str = is.readLine(); // 每一行丢失首字母 log.info("数据输出:"+str);
-         * }while(is.read() != -1); }
-         */
+        TestThread testThread = new TestThread();
+        TestTwoThread testTwoThread = new TestTwoThread();
 
         log.info("测试\n" + request.getContentType());
-        log.info("测试\n" + request.getContentType().replaceAll(".+boundary=", "--"));
-
         double originalFilename = request.getContentLength();
         log.info("|" + originalFilename + "|");
         log.info(request.getMethod());
+        // 数据传递方式
         if (request.getInputStream() != null) {
             InputStream is = request.getInputStream();
             StringBuilder sb = new StringBuilder();
             byte[] b = new byte[4096];
             for (int n; (n = is.read(b)) != -1;) {
                 // Content-disposition是 MIME 协议的扩展 解析它
-                System.out.println(new String(b, 0, n));
+                /**
+                 * XXX 协议输出
+                 */
+                // 开辟线程用新开辟的线程进行打印输出
+                testThread.setB(b);
+                testThread.setN(n);
+                Thread thread = new Thread(testThread);
+                thread.start();
+                System.out.println("线程id:" + thread.getId());
+                // System.out.println(new String(b, 0, n));
                 sb.append(new String(b, 0, n));
             }
-            log.info("测试|" + sb);
-            String[] xx = sb.toString().split("Content-Type");
-            log.info("测试分割|" + xx[1]);
-
-            /**
-             * 解析字符串得到上传数据并将之保存
-             */
-            /**
-             * String[] vx2 = sb.toString().split(" "); int x2 = vx2.length;
-             * log.info("|"+x2+"|"); int i = 0; while (i<x2) {
-             * log.info("第"+i+"条数据："+vx2[i]); i++; if(i == 20){ break; } }
-             * log.info("|第二次冲击|解析方式换成win操作系统的换行符之后 可以使用"); // 解析方式错误
-             * 还是有问题：分割条件的换行符会和文件中的换行符发生BUG String[] xxTODO = new String[10];
-             * String[] vx3 = sb.toString().split("\r\n\r\n"); int x3 =
-             * vx3.length; int y = 0; log.info("记录条数|"+x3); for(i = 0
-             * ;i<x3;i++){ log.info("第"+i+"条数据："+vx3[i]); String[] tmp =
-             * vx3[i].split(request.getContentType().replaceAll(".+boundary=",
-             * "--")); xxTODO[y] = tmp[0]; y++; } for(i = 0 ;i <
-             * xxTODO.length;i++){ log.error("穿道受液|"+xxTODO[i]); }
-             *
-             * log.info("|第三次冲击|"); String[] vx4 =
-             * sb.toString().split("Content-Disposition: form-data; name=\"");
-             * int x4 = vx4.length; log.info("记录条数|"+x4); for(i = 0 ;i<x4;i++){
-             * log.info("第"+i+"条数据："+vx4[i]); } String[] t0 =
-             * vx4[x4-1].toString().split("\"; filename=\"");
-             * log.info("[1]"+t0[0]); String[] t1 =
-             * t0[1].toString().split("\""); log.info("[2]"+t1[0]); String[] t3
-             * = t1[1].toString().split("Content-Type: ");
-             * log.info("[3]"+t3[1]); // 解析方式错误 String[] t4 =
-             * t3[1].toString().split("\r\n"); int xt4 = t4.length;
-             * log.info("记录条数|"+xt4); for(i = 0 ;i<xt4;i++){
-             * log.info("第"+i+"条数据："+t4[i]); }
-             */
-
-            /**
-             * Packet for query is too large (44725236 > 4194304). You can
-             * change this value on the server by setting the
-             * max_allowed_packet' variable.; nested exception is
-             * com.mysql.jdbc.PacketTooBigException: Packet for query is too
-             * large (44725236 > 4194304). You can change this value on the
-             * server by setting the max_allowed_packet' variable.
-             *
-             * max_allowed_packet 数据库默认值是 4 M 推荐通过修改数据库配置文件 max_allowed_packet =
-             * 40M 的方式，后重启数据库方可生效 命令行查看 show variables like
-             * 'max_allowed_packet'; 命令行修改 set global max_allowed_packet =
-             * 40*1024*1024; 否则的话会出现查询新增修改的数据大于允许最大的数据包尺寸的问题。|如上报错
-             * 我猜测这就是为什么文件存储不推荐使用数据库存储的原因了，你不确定文件上传的 大小，而设置太大的话又会影响到效率等一系列问题
-             */
             // 最接近成功的解析方法
             // 只要逐条解析就OK了
             // 可以探究更加简单直接的方式
@@ -299,6 +298,12 @@ public class DownOrUploadController extends BaseController {
                     log.error("改造|" + temtwo[0]);
                     size = temtwo[0];
                 }
+                if (i == 6) {
+                    // TODO 新增 数据获取部分
+                }
+                if (i == 7) {
+
+                }
             }
             String test = vx6[x6 - 2];
             String[] tt = test.split("Content-Type: text/plain\r\n\r\n");
@@ -314,7 +319,7 @@ public class DownOrUploadController extends BaseController {
                 }
             }
             /**
-             * 中文编码上传异常
+             * 中文编码上传异常 TODO
              */
             log.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
             // TXTFile file = new TXTFile();
@@ -334,15 +339,32 @@ public class DownOrUploadController extends BaseController {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
             String dateString = sdf.format(new Date());
 
-            log.error("日期：" + dateString);
             file.setFileName(dateString + "_" + name);
             file.setDisplayName(name.split("\\.")[0]);
             file.setExtension(name.split("\\.")[1]);
-            file.setContentType(data.substring(0, 25));
+
+            /**
+             * 如果长度大于25个字符则截取前25个字符，否则将所有信息输出
+             */
+            String curType;
+            try {
+                curType = data.substring(0, 25);
+            } catch (Exception e) {
+                curType = data;
+            }
+            file.setContentType(curType);
+
+            // file.setFileData(new String(data.getBytes("UTF-8"),"UTF-8"));
+            // file.setFileData(new String(data.getBytes(),"GBK"));
             file.setFileData(data);
             file.setFileSize(Integer.valueOf(size));
             file.setCreateTime(new Date());
-            txtFileService.insert(file);
+
+            testTwoThread.setFile(file);
+            new Thread(testTwoThread).start();
+            // TODO
+
+            /* txtFileService.insert(file); */
             log.info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
         }
@@ -378,7 +400,165 @@ public class DownOrUploadController extends BaseController {
          */
 
         // 成功抵达
-        return new JsonResult<String>(true,"OK");
+        return new JsonResult<String>(true, "OK");
     }
+
+    /**
+     * 类中类 内部类
+     *
+     * 将控制台打印语句的操作放置到线程中去
+     *
+     * 使用线程前数据上传响应时间：27600ms 使用线程后数据上传响应时间：30360ms
+     *
+     * @author 1101399
+     * @CreateDate 2018-6-7 下午3:48:52
+     */
+    private class TestThread implements Runnable {
+
+        private int n;
+        private byte[] b;
+
+        public void setN(int n) {
+            this.n = n;
+        }
+
+        public void setB(byte[] b) {
+            this.b = b;
+        }
+
+        // public synchronized void run(){
+        @Override
+        public void run() {
+            // TODO Auto-generated method stub
+            System.out.println(new String(b, 0, n));
+            System.out.println();
+        }
+
+    }
+
+    /**
+     * 将耗时的数据库插入操作放入线程中去大大的加快界面的响应速度 开启线程操作本身也会具有一定的时间响应消耗：所以需要进行响应的权衡
+     * 这么理解略显偏颇(理解有问题)<br>
+     *
+     * 开启线程可以简单的；与git分支结构等相类比 开启线程之后原来的线程继续走下去，新的线程执行指定耗时操作
+     * 就是可能存在这种情况：原线程执行完毕，新线程仍在继续执行。 在这个过程中新线程出现异常情况，但是原线程已经执行完毕。
+     * 这种情况推荐使用线程之间的通信&等待&睡眠...<br>
+     *
+     * 使用线程前数据上传响应时间：27600ms<br>
+     * 使用线程后数据上传响应时间：18230ms<br>
+     *
+     * @author 1101399
+     * @CreateDate 2018-6-7 下午4:14:01
+     */
+    private class TestTwoThread implements Runnable {
+
+        private TXTFile file;
+
+        public void setFile(TXTFile file) {
+            this.file = file;
+        }
+
+        @Override
+        public void run(){
+            // TODO 没有办法监听这个线程是否执行无误    - 可能执行失败也可能执行成功，如果要进行监听的话可以引入线程间的通信来处理当前步骤
+            try{
+                txtFileService.insert(file);
+            }catch(Exception e){
+                // 异常情况处理机制
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class TestCommRunOne implements Runnable{
+        // synchronized 线程间通信用关键字 可以修饰字段数据也可以修饰方法
+        private final TestComm comm;
+        public TestCommRunOne(TestComm comm){
+            this.comm = comm;
+        }
+        @Override
+        public void run() {
+//            System.out.println("TestCommRunOne");
+            synchronized(this){
+                for(int i = 0;i < 5; i++){
+                    comm.methodA("TestCommRunOne",i);
+                }
+            }
+        }
+    }
+    private class TestCommRunTwo implements Runnable{
+        private final TestComm comm;
+        public TestCommRunTwo(TestComm comm){
+            this.comm = comm;
+        }
+        @Override
+        public void run(){
+//            System.out.println("TestCommRunTwo");
+            synchronized(this){
+                for(int i = 0;i < 5; i++){
+                    comm.methodB("TestCommRunTwo",i);
+                }
+            }
+//            TestComm.xx xx = null;
+//            xx.xxx();
+        }
+    }
+
+    private class TestComm{
+        // 共享内存   式的通信。多个线程需要访问同一个共享变量，谁拿到了锁（获得了访问权限），谁就可以执行
+        // 当一个访问时，就会自动加锁
+        synchronized public void methodA(String name,int i){
+            System.out.println("输出共享式线程通信！方法：methodA 线程名称："+name+" 编号："+i);
+        }
+        synchronized public void methodB(String name,int i){
+            System.out.println("输出共享式线程通信！方法：methodB 线程名称："+name+" 编号："+i);
+        }
+        // synchronized (this){//修饰代码块}
+        // 也可以作加锁的操作，当前操作没有操作完毕就会阻塞其他的操作
+        // 谁抢到锁操作就会有权限执行当前锁的所控制的代码
+        class xx{
+            public void xxx(){
+                synchronized(xx.class){
+                    // synchronized修饰一个类 作用暂不明确
+                    // 修饰一个类、修饰一个方法、修饰一段代码、修饰静态方法
+                }
+            }
+        }
+    }
+
+    /**
+        synchronized的四种用法
+        https://blog.csdn.net/sinat_32588261/article/details/72880159
+     */
+
+    /**
+     * 线程并发相关测试软件
+     */
+    @RequestMapping("/testThreads")
+    public void testThreads(){
+        try{
+            TestComm comm = new TestComm();
+            // 提示报错没有参数
+            TestCommRunOne t1 = new TestCommRunOne(comm);
+            TestCommRunTwo t2 = new TestCommRunTwo(comm);
+            Thread th1 = new Thread(t1);
+            Thread th2 = new Thread(t2);
+            th1.start();
+
+            // 等待一个进程结束：用以等待前一个进程结束后方才开始进行下一步操作，同步确保下一步骤之前的操作是已经结束了的。
+            th1.join();
+            // 等待唤醒线程
+            // th1.wait(); 等待
+            // th1.notify(); 唤醒
+
+            th2.start();
+            Thread.sleep(5000);
+        }catch(InterruptedException e){
+            e.printStackTrace();
+        }catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

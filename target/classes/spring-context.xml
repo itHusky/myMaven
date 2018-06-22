@@ -121,6 +121,53 @@
     </property>
   </bean>
   
+  
+   <!-- A1数据源定义     新增：动态切换数据源  提供动态切换数据源  -->
+   <bean id="dataSource" class="com.zyh.domain.base.DynamicDataSource">  
+        <property name="targetDataSources">  
+           <map key-type="java.lang.String"> 
+                <entry value-ref="dataSource_m" key="MASTER"></entry>  
+                <entry value-ref="slaveDataSources" key="SLAVE"></entry>  
+            </map>  
+        </property>
+        <!-- 新增：动态切换数据源         默认数据库 -->
+        <property name="defaultTargetDataSource" ref="dataSource_m"></property>      
+    </bean> 
+    <!-- A1数据源定义      新增：动态切换数据源  提供动态切换数据源  -->
+    
+    <!--
+        AOP切面配置 
+    proxy-target-class属性值决定是基于接口的还是基于类的代理被创建。
+            首先说明下proxy-target-class="true"和proxy-target-class="false"的区别，
+            为true则是基于类的代理将起作用（需要cglib库），为false或者省略这个属性，
+            则标准的JDK 基于接口的代理将起作用
+            参考资料：https://my.oschina.net/cwalet/blog/36055
+            参考资料：https://blog.csdn.net/ysj960120/article/details/78479260
+
+     -->
+    <aop:aspectj-autoproxy proxy-target-class="true" />
+	<bean id="manyDataSourceAspect" class="com.zyh.domain.base.DataSourceAspect" />
+	<aop:config>
+	    <aop:aspect id="dataSourceCut" ref="manyDataSourceAspect">
+<!-- 	        <aop:pointcut expression="execution(* com.zyh.dao.file.TXTFileMapper.findDataById(..))" -->
+<!-- 	            id="dataSourceCutPoint" />配置切点 -->
+<!--         <aop:pointcut expression="execution(* com.zyh.dao.file.TXTFileMapper.(..))" -->
+<!--                 id="dataSourceCutPoint" /> -->
+        <!--
+                             重点。注意不要写错 execution(* com.zyh.dao.*.*(..)) 原来的少写了一层
+        com.zyh.dao.*.*(..)) *.dao.xxxMapper.xxx方法(XXX参数)
+        -->
+         <aop:pointcut expression="execution(* com.zyh.dao.*.*.*(..))"
+                id="dataSourceCutPoint" /><!-- 配置切点 -->        
+                
+	        <aop:before pointcut-ref="dataSourceCutPoint" method="before" />
+	        <!-- <aop:after pointcut-ref="dataSourceCutPoint" method="before" /> -->
+	        <!-- <aop:around pointcut-ref="dataSourceCutPoint" method="before" /> -->
+	    </aop:aspect>
+	</aop:config>
+    
+    
+    
   <bean id="transactionManager"
     class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
     <property name="dataSource" ref="dataSource"/>
@@ -161,5 +208,6 @@
     <context:property-placeholder location="classpath:config/jdbc_dev.properties"/>
     <import resource="classpath:spring-jdbc.xml"/>
   </beans>
+   
   
 </beans>  
